@@ -27,9 +27,17 @@ namespace agrysync_backend.Controllers
             if (file == null || file.Length == 0)
                 return BadRequest("No file uploaded.");
 
-            var filePath = Path.Combine("Uploads", file.FileName);
+            var uploadPath = Path.Combine(Directory.GetCurrentDirectory(), "Uploads");
 
-            // Save file temporarily
+            // Check if the directory exists, if not, create it
+            if (!Directory.Exists(uploadPath))
+            {
+                Directory.CreateDirectory(uploadPath);
+            }
+
+            var filePath = Path.Combine(uploadPath, file.FileName);
+
+            // Save the file temporarily
             using (var stream = new FileStream(filePath, FileMode.Create))
             {
                 await file.CopyToAsync(stream);
@@ -41,10 +49,12 @@ namespace agrysync_backend.Controllers
                 var form = new MultipartFormDataContent();
                 form.Add(new ByteArrayContent(System.IO.File.ReadAllBytes(filePath)), "file", file.FileName);
 
-                var response = await client.PostAsync("http://localhost:5000/predict", form);
+                var response = await client.PostAsync("http://127.0.0.1:5000/predict", form);
                 if (response.IsSuccessStatusCode)
                 {
                     var prediction = await response.Content.ReadAsStringAsync();
+                    // Clean the prediction string by removing unwanted characters
+                    prediction = prediction.Trim().Replace("\"", "").Replace("\n", "");
                     return Ok(new { Prediction = prediction });
                 }
                 return StatusCode(500, "Error in prediction service.");
