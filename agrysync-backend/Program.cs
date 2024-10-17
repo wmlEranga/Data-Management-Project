@@ -1,3 +1,6 @@
+using Microsoft.EntityFrameworkCore;
+using agrysync_backend.Data;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
