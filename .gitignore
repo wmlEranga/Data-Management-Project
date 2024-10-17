@@ -1,12 +1,4 @@
-# Ignore node_modules for React frontend
-/agrysync-frontend/node_modules/
-/agrysync-frontend/.next/
-/agrysync-frontend/.env.local
 
-# Ignore build and coverage for frontend
-/agrysync-frontend/build/
-/agrysync-frontend/.env
-/agrysync-frontend/.vscode
 
 # Ignore compiled output for .NET Core backend
 /agrysync-backend/bin/
