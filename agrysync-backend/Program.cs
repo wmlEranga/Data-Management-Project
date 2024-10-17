@@ -7,6 +7,12 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllers();
 
+// Configure DbContext for postgre sql
+builder.Services.AddDbContext<AgrysyncDbContext>(options =>
+{
+    options.UseNpgsql(builder.Configuration.GetConnectionString("AgrysyncDbContext"));
+});
+
 // Enable CORS with a policy
 builder.Services.AddCors(options =>
 {

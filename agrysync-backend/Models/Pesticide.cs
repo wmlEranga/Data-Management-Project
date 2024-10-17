@@ -16,6 +16,12 @@ namespace agrysync_backend.Models
         public string Dosage { get; set; }
         public string safetyPrecautions { get; set; }
 
+        // Navigation property for DiseasePesticideMappings
+
+        public ICollection<DiseasePesticideMapping> DiseasePesticideMappings { get; set; }
+
+        public ICollection<CultivationData> CultivationData { get; set; }
+
     }
 
 }

@@ -18,6 +18,8 @@ namespace agrysync_backend.Models
 
         public DateTime DateRegistered { get; set; }
 
+        public ICollection<Field> Fields { get; set; }
+
     }
 
 }

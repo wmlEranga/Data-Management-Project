@@ -21,6 +21,8 @@ namespace agrysync_backend.Models
 
         public string notes { get; set; }
 
+        public ICollection<GuidanceUpdates> GuidanceUpdates { get; set; }
+
     }
 
 }

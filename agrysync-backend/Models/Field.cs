@@ -26,5 +26,11 @@ namespace agrysync_backend.Models
 
         public Farmer Farmer { get; set; }
 
+        // Collection of related Crops
+        public ICollection<Crop> Crops { get; set; }
+
+
+        public ICollection<WeatherData> WeatherData { get; set; }
+
     }
 }

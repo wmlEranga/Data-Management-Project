@@ -27,5 +27,8 @@ namespace agrysync_backend.Models
 
         // Navigation property (Optional, for relationship with Field)
         public Field Field { get; set; }
+
+        public ICollection<CultivationData> CultivationData { get; set; }
+        public ICollection<YieldData> YieldData { get; set; }
     }
 }
