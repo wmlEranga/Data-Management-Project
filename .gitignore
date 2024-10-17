@@ -5,10 +5,7 @@
 
 # Ignore build and coverage for frontend
 /agrysync-frontend/build/
-/agrysync-frontend/dist/
 /agrysync-frontend/.env
-/agrysync-frontend/.coverage/
-/agrysync-frontend/coverage/
 /agrysync-frontend/.vscode
 
 # Ignore compiled output for .NET Core backend
