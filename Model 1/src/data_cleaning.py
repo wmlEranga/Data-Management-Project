@@ -1,8 +1,20 @@
 import pandas as pd
 from sklearn.preprocessing import MinMaxScaler
+import os
 
 # Load the data from the CSV file
-filename = "data/collected_data/data_backup_202310171200.csv"  # Update this with the correct path
+# Get the latest file in the directory
+directory = "data/collected_data/"
+files = [
+    f
+    for f in os.listdir(directory)
+    if f.startswith("data_backup") and f.endswith(".csv")
+]
+files.sort(reverse=True)
+filename = os.path.join(directory, files[0]) if files else None
+
+if filename is None:
+    raise FileNotFoundError("No data_backup files found in the directory.")
 data = pd.read_csv(filename)
 
 # Display the initial data
@@ -19,7 +31,11 @@ missing_values = data.isnull().sum()
 print("Missing Values Before Cleaning:")
 print(missing_values)
 
-# Option 1: Impute missing values (e.g., filling with the mean for numerical columns)
+# Convert 'WaterLevel' from categorical to numerical (e.g., 'High' = 3, 'Moderate' = 2, 'Low' = 1)
+water_level_mapping = {"High": 3, "Moderate": 2, "Low": 1}
+data["WaterLevel"] = data["WaterLevel"].map(water_level_mapping)
+
+# Handle any missing or unmapped values after mapping
 data["WaterLevel"].fillna(data["WaterLevel"].mean(), inplace=True)
 data["Temperature"].fillna(data["Temperature"].mean(), inplace=True)
 data["Humidity"].fillna(data["Humidity"].mean(), inplace=True)

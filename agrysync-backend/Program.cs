@@ -4,13 +4,12 @@ using agrysync_backend.Data;
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
-
 builder.Services.AddControllers();
 
-// Configure DbContext for postgre sql
+// Configure DbContext for PostgreSQL
 builder.Services.AddDbContext<AgrysyncDbContext>(options =>
 {
-    options.UseNpgsql(builder.Configuration.GetConnectionString("AgrysyncDbContext"));
+    options.UseNpgsql(builder.Configuration.GetConnectionString("AgrysyncDbConnection")); // Updated connection string name
 });
 
 // Enable CORS with a policy

@@ -21,6 +21,14 @@ namespace agrysync_backend.Data
         public DbSet<Disease> Diseases { get; set; }
         public DbSet<DiseasePesticideMapping> DiseasePesticideMappings { get; set; }
 
+        public DbSet<WeatherData> WeatherData { get; set; }
+        public DbSet<GuidanceUpdates> GuidanceUpdates { get; set; }
+
+        public DbSet<StandardGuides> StandardGuides { get; set; }
+
+        public DbSet<Feedback> Feedback { get; set; }
+
+
         // Override this method to configure relationships, table names, etc.
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -29,7 +37,6 @@ namespace agrysync_backend.Data
                 .HasOne(c => c.Field)
                 .WithMany(f => f.Crops)
                 .HasForeignKey(c => c.FieldId);
-
 
             // Add configurations for other relationships if necessary
             modelBuilder.Entity<DiseasePesticideMapping>()
@@ -76,6 +83,18 @@ namespace agrysync_backend.Data
                 .HasOne(yd => yd.Crop)
                 .WithMany(c => c.YieldData)
                 .HasForeignKey(yd => yd.CropId);
+
+            modelBuilder.Entity<Feedback>()
+                .HasOne(f => f.Farmer)
+                .WithMany(f => f.Feedback)
+                .HasForeignKey(f => f.FarmerId);
+
+
+            modelBuilder.Entity<Feedback>()
+                .HasOne(f => f.Crop)
+                .WithMany(c => c.Feedback)
+                .HasForeignKey(f => f.CropId);
+
 
 
         }
