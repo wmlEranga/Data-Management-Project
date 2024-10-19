@@ -60,6 +60,5 @@ namespace agrysync_backend.Controllers
                 return StatusCode(500, "Error in prediction service.");
             }
         }
-
     }
 }
