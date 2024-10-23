@@ -100,6 +100,23 @@ namespace agrysync_backend.Controllers
             }
         }
 
+        [HttpPost("logout")]
+        public IActionResult Logout()
+        {
+            // Clear the JWT cookie
+            var cookieOptions = new CookieOptions
+            {
+                HttpOnly = true,
+                Expires = DateTime.UtcNow.AddDays(-1), // Set an expiration in the past
+                SameSite = SameSiteMode.Strict,
+                Secure = true
+            };
+
+            Response.Cookies.Append("jwt", "", cookieOptions); // Clear the cookie by setting an empty value
+            return Ok(new { message = "Logged out successfully" });
+        }
+
+
     }
 
 

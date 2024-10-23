@@ -3,8 +3,31 @@ import React from "react";
 import { AppBar, Toolbar, Typography, Button, IconButton } from "@mui/material";
 import { Link } from "react-router-dom";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
+import config from "../config";
+import { useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
 
 const Header = () => {
+  const navigate = useNavigate();
+
+  const handleLogout = async () => {
+    try {
+      await fetch(`${config.backendUrl}/login/logout`, {
+        method: "POST",
+        credentials: "include", // Send the cookie to clear it on the backend
+      });
+
+      //toaster
+      toast.success("Successfully logged out");
+
+      // Redirect to the login page
+
+      navigate("/login");
+    } catch (error) {
+      console.error("Logout failed", error);
+    }
+  };
+
   return (
     <AppBar
       position="static"
@@ -98,6 +121,25 @@ const Header = () => {
           >
             <AccountCircleIcon fontSize="large" />
           </IconButton>
+
+          {/*logout button*/}
+          <Button
+            component={Link}
+            onClick={handleLogout}
+            to="/login"
+            color="inherit"
+            sx={{
+              fontSize: "0.875rem",
+              padding: "0 16px",
+              display: "flex",
+              alignItems: "center",
+              height: "50px",
+              textTransform: "none",
+              top: "-5px",
+            }}
+          >
+            Logout
+          </Button>
         </div>
       </Toolbar>
     </AppBar>

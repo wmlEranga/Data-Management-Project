@@ -6,6 +6,8 @@ import YieldPrediction from "./page/Yield";
 import LogIn from "./page/Login";
 import SignUp from "./page/Signup";
 import ProtectedRoute from "./components/ProtectedRoute"; // Import ProtectedRoute
+import Home from "./page/Home";
+import ProjectPage from "./page/ProjectPage";
 
 function App() {
   return (
@@ -41,7 +43,22 @@ function App() {
                   />
 
                   {/* Public routes */}
-                  <Route path="/" element={<div>Home</div>} />
+                  <Route
+                    path="/"
+                    element={
+                      <ProtectedRoute>
+                        <Home />
+                      </ProtectedRoute>
+                    }
+                  />
+                  <Route
+                    path="/project/:id"
+                    element={
+                      <ProtectedRoute>
+                        <ProjectPage />
+                      </ProtectedRoute>
+                    }
+                  />
                   <Route path="/profile" element={<div>Profile</div>} />
                 </Routes>
               </>
