@@ -48,11 +48,15 @@ function SignUp() {
         throw new Error("Signup failed. Please try again.");
       }
 
+      // Check if the response contains specific data or status
       const data = await response.json();
-      //success message using react toastify
-      toast.success("User signed up successfully!");
-
-      navigate("/login");
+      if (data.success) {
+        // success message using react toastify
+        toast.success("User signed up successfully!");
+        navigate("/login");
+      } else {
+        throw new Error("Signup failed. Please try again.");
+      }
     } catch (err) {
       setError(err.message);
       setOpenSnackbar(true);

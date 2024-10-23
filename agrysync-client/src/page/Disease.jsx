@@ -32,6 +32,7 @@ function DiseaseIdentifier() {
         {
           method: "POST",
           body: formData,
+          credentials: "include",
         }
       );
 

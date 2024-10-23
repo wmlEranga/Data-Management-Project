@@ -1,4 +1,9 @@
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
 using agrysync_backend.Data;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -15,12 +20,47 @@ builder.Services.AddDbContext<AgrysyncDbContext>(options =>
 // Enable CORS with a policy
 builder.Services.AddCors(options =>
 {
-    options.AddPolicy("AllowAll", builder =>
+    options.AddPolicy("AllowSpecificOrigins", builder =>
     {
-        builder.AllowAnyOrigin()
+        builder.WithOrigins("http://localhost:3000") // Allow your frontend URL
                .AllowAnyMethod()
-               .AllowAnyHeader();
+               .AllowAnyHeader()
+               .WithExposedHeaders("Set-Cookie")
+               .AllowCredentials(); // Allows cookies
     });
+});
+
+// Add JWT Authentication
+var key = Encoding.ASCII.GetBytes(builder.Configuration["Jwt:SecretKey"]); // Get secret key from configuration
+builder.Services.AddAuthentication(options =>
+{
+    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+})
+.AddJwtBearer(options =>
+{
+    options.RequireHttpsMetadata = false; // Set to true in production
+    options.SaveToken = true;
+    options.TokenValidationParameters = new TokenValidationParameters
+    {
+        ValidateIssuerSigningKey = true,
+        IssuerSigningKey = new SymmetricSecurityKey(key),
+        ValidateIssuer = false, // You can validate the issuer based on your needs
+        ValidateAudience = false, // You can validate the audience based on your needs
+        ClockSkew = TimeSpan.Zero // Optional: remove delay when token expires
+    };
+});
+
+// Add in-memory caching
+builder.Services.AddDistributedMemoryCache(); // Add this line for in-memory caching
+
+// Enable session handling for cookies
+builder.Services.AddSession(options =>
+{
+    options.Cookie.HttpOnly = true; // Ensure the cookie is HTTP-only for security
+    options.Cookie.SecurePolicy = CookieSecurePolicy.Always; // Use Secure cookies in production (HTTPS)
+    options.Cookie.SameSite = SameSiteMode.Strict; // CSRF protection
+    options.IdleTimeout = TimeSpan.FromHours(1); // Set session timeout
 });
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
@@ -39,9 +79,14 @@ if (app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 
 // Apply CORS policy
-app.UseCors("AllowAll");
+app.UseCors("AllowSpecificOrigins");
 
+// Enable Authentication and Authorization
+app.UseAuthentication(); // Add this line before UseAuthorization
 app.UseAuthorization();
+
+// Enable session handling
+app.UseSession();
 
 app.MapControllers();
 

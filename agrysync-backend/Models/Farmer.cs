@@ -11,7 +11,7 @@ namespace agrysync_backend.Models
         public int FarmerId { get; set; }
 
         // Name of the farmer
-        [Required(ErrorMessage = "Farmer name is required.")]
+
         [StringLength(100, ErrorMessage = "Farmer name cannot exceed 100 characters.")]
         public string? FarmerName { get; set; }
 

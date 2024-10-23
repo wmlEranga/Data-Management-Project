@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using agrysync_backend.Data;
@@ -11,9 +12,11 @@ using agrysync_backend.Data;
 namespace agrysync_backend.Migrations
 {
     [DbContext(typeof(AgrysyncDbContext))]
-    partial class AgrysyncDbContextModelSnapshot : ModelSnapshot
+    [Migration("20241021133138_MakeFarmerNameNullable")]
+    partial class MakeFarmerNameNullable
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -185,6 +188,7 @@ namespace agrysync_backend.Migrations
                         .HasColumnType("text");
 
                     b.Property<string>("FarmerName")
+                        .IsRequired()
                         .HasMaxLength(100)
                         .HasColumnType("character varying(100)");
 

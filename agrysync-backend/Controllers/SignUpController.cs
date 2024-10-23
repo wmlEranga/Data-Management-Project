@@ -38,8 +38,10 @@ namespace agrysync_backend.Controllers
             // Create a new Farmer object and save it to the database
             var newUser = new Farmer // Ensure your Farmer model has these properties
             {
+
                 FarmerEmail = request.Email,
-                PasswordHash = passwordHash, // Assuming your Farmer model has a PasswordHash property
+                PasswordHash = passwordHash,
+                DateRegistered = DateTime.UtcNow // Optional: set the registration date
             };
 
             // Add the new user to the database
@@ -47,7 +49,8 @@ namespace agrysync_backend.Controllers
             await _dbContext.SaveChangesAsync(); // Save changes to the database
 
             // Return a success response
-            return Ok("User signed up successfully.");
+            // Return a success response
+            return Ok(new { success = true, message = "User signed up successfully." });
         }
     }
 }

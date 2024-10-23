@@ -5,14 +5,16 @@ import DiseaseIdentifier from "./page/Disease";
 import YieldPrediction from "./page/Yield";
 import LogIn from "./page/Login";
 import SignUp from "./page/Signup";
+import ProtectedRoute from "./components/ProtectedRoute"; // Import ProtectedRoute
 
 function App() {
   return (
     <Router>
       <div className="App">
         <Routes>
-          <Route path="/login" element={<LogIn />} />{" "}
+          <Route path="/login" element={<LogIn />} />
           <Route path="/signup" element={<SignUp />} />
+
           {/* No need for Container */}
           <Route
             path="*"
@@ -20,10 +22,27 @@ function App() {
               <>
                 <Header /> {/* Use the Header component */}
                 <Routes>
-                  <Route path="/disease" element={<DiseaseIdentifier />} />
+                  {/* Protected routes */}
+                  <Route
+                    path="/disease"
+                    element={
+                      <ProtectedRoute>
+                        <DiseaseIdentifier />
+                      </ProtectedRoute>
+                    }
+                  />
+                  <Route
+                    path="/yield"
+                    element={
+                      <ProtectedRoute>
+                        <YieldPrediction />
+                      </ProtectedRoute>
+                    }
+                  />
+
+                  {/* Public routes */}
                   <Route path="/" element={<div>Home</div>} />
                   <Route path="/profile" element={<div>Profile</div>} />
-                  <Route path="/yield" element={<YieldPrediction />} />
                 </Routes>
               </>
             }
