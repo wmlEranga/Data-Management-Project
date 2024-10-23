@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using agrysync_backend.Data;
@@ -11,9 +12,11 @@ using agrysync_backend.Data;
 namespace agrysync_backend.Migrations
 {
     [DbContext(typeof(AgrysyncDbContext))]
-    partial class AgrysyncDbContextModelSnapshot : ModelSnapshot
+    [Migration("20241023111012_UpdateCropTypesAndVarieties")]
+    partial class UpdateCropTypesAndVarieties
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -86,6 +89,9 @@ namespace agrysync_backend.Migrations
                     b.Property<int>("CropTypeId")
                         .HasColumnType("integer");
 
+                    b.Property<int>("CropTypeNavigationCropTypeId")
+                        .HasColumnType("integer");
+
                     b.Property<float>("HarvestDuration")
                         .HasColumnType("real");
 
@@ -96,6 +102,8 @@ namespace agrysync_backend.Migrations
                     b.HasKey("CropVarietyId");
 
                     b.HasIndex("CropTypeId");
+
+                    b.HasIndex("CropTypeNavigationCropTypeId");
 
                     b.ToTable("CropVarieties");
                 });
@@ -521,7 +529,15 @@ namespace agrysync_backend.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("agrysync_backend.Models.CropType", "CropTypeNavigation")
+                        .WithMany()
+                        .HasForeignKey("CropTypeNavigationCropTypeId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.Navigation("CropType");
+
+                    b.Navigation("CropTypeNavigation");
                 });
 
             modelBuilder.Entity("agrysync_backend.Models.CultivationData", b =>

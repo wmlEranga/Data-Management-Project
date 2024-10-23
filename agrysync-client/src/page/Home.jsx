@@ -38,6 +38,7 @@ import {
 } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import AddCircleIcon from "@mui/icons-material/AddCircle";
+import AddProjectModal from "../components/AddProjectModal";
 
 // Dummy data for projects (replace with real data from API or state)
 const initialProjects = [
@@ -50,7 +51,11 @@ function Home() {
   const [open, setOpen] = useState(false);
   const [newProjectName, setNewProjectName] = useState("");
   const [error, setError] = useState("");
+  const [openModal, setOpenModal] = useState(false);
   const navigate = useNavigate();
+
+  const handleOpenModal = () => setOpenModal(true);
+  const handleCloseModal = () => setOpenModal(false);
 
   const handleOpen = () => setOpen(true);
   const handleClose = () => {
@@ -59,23 +64,20 @@ function Home() {
     setError("");
   };
 
-  const handleSave = () => {
-    if (newProjectName.trim() === "") {
-      setError("Project name is required.");
-      return;
-    }
-
-    // Generate a new project ID (replace with API call if needed)
-    const newProject = { id: projects.length + 1, name: newProjectName };
-
-    // Add new project to the list
-    setProjects([...projects, newProject]);
-
-    // Redirect to the new project's page
-    navigate(`/project/${newProject.id}`);
-
-    // Close modal
-    handleClose();
+  const handleSaveProject = (newProject) => {
+    // Assuming you have an API to handle the project creation
+    fetch("/api/projects", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(newProject),
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        setProjects([...projects, data]); // Add new project to the list
+      })
+      .catch((error) => console.error("Error adding project:", error));
   };
 
   return (
@@ -111,7 +113,7 @@ function Home() {
                 backgroundColor: "#a8e063",
                 "&:hover": { backgroundColor: "#8dcf56" },
               }}
-              onClick={handleOpen}
+              onClick={handleOpenModal}
               startIcon={<AddCircleIcon />}
             >
               Add Project
@@ -120,56 +122,11 @@ function Home() {
         </Grid>
 
         {/* Modal for adding new project */}
-        <Modal open={open} onClose={handleClose}>
-          <Box
-            sx={{
-              position: "absolute",
-              top: "50%",
-              left: "50%",
-              transform: "translate(-50%, -50%)",
-              bgcolor: "background.paper",
-              boxShadow: 24,
-              p: 4,
-              width: 400,
-              borderRadius: "8px",
-            }}
-          >
-            <Typography variant="h6" gutterBottom>
-              Add New Project
-            </Typography>
-            <TextField
-              label="Project Name"
-              fullWidth
-              variant="outlined"
-              value={newProjectName}
-              onChange={(e) => setNewProjectName(e.target.value)}
-              sx={{ mb: 2 }}
-            />
-            {error && <Typography color="error">{error}</Typography>}
-            <Button
-              variant="contained"
-              fullWidth
-              sx={{
-                backgroundColor: "#56ab2f",
-                "&:hover": { backgroundColor: "#8dcf56" },
-                mt: 2,
-              }}
-              onClick={handleSave}
-            >
-              Save
-            </Button>
-            <Button
-              fullWidth
-              sx={{
-                backgroundColor: "#ddd",
-                mt: 2,
-              }}
-              onClick={handleClose}
-            >
-              Cancel
-            </Button>
-          </Box>
-        </Modal>
+        <AddProjectModal
+          open={openModal}
+          handleClose={handleCloseModal}
+          onSave={handleSaveProject}
+        />
       </Box>
     </Container>
   );

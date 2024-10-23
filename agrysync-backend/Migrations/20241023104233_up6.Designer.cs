@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using agrysync_backend.Data;
@@ -11,9 +12,11 @@ using agrysync_backend.Data;
 namespace agrysync_backend.Migrations
 {
     [DbContext(typeof(AgrysyncDbContext))]
-    partial class AgrysyncDbContextModelSnapshot : ModelSnapshot
+    [Migration("20241023104233_up6")]
+    partial class up6
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -34,6 +37,9 @@ namespace agrysync_backend.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
+                    b.Property<int?>("CropVarietyId")
+                        .HasColumnType("integer");
+
                     b.Property<DateTime>("ExpectedHarvestDate")
                         .HasColumnType("timestamp with time zone");
 
@@ -52,6 +58,8 @@ namespace agrysync_backend.Migrations
                         .HasColumnType("text");
 
                     b.HasKey("CropId");
+
+                    b.HasIndex("CropVarietyId");
 
                     b.HasIndex("FieldId");
 
@@ -86,8 +94,8 @@ namespace agrysync_backend.Migrations
                     b.Property<int>("CropTypeId")
                         .HasColumnType("integer");
 
-                    b.Property<float>("HarvestDuration")
-                        .HasColumnType("real");
+                    b.Property<int>("HarvestDuration")
+                        .HasColumnType("integer");
 
                     b.Property<string>("Variety")
                         .IsRequired()
@@ -504,6 +512,10 @@ namespace agrysync_backend.Migrations
 
             modelBuilder.Entity("agrysync_backend.Models.Crop", b =>
                 {
+                    b.HasOne("agrysync_backend.Models.CropVariety", null)
+                        .WithMany("Crops")
+                        .HasForeignKey("CropVarietyId");
+
                     b.HasOne("agrysync_backend.Models.Field", "Field")
                         .WithMany("Crops")
                         .HasForeignKey("FieldId")
@@ -645,6 +657,11 @@ namespace agrysync_backend.Migrations
             modelBuilder.Entity("agrysync_backend.Models.CropType", b =>
                 {
                     b.Navigation("CropVarieties");
+                });
+
+            modelBuilder.Entity("agrysync_backend.Models.CropVariety", b =>
+                {
+                    b.Navigation("Crops");
                 });
 
             modelBuilder.Entity("agrysync_backend.Models.Disease", b =>

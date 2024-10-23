@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using agrysync_backend.Data;
@@ -11,9 +12,11 @@ using agrysync_backend.Data;
 namespace agrysync_backend.Migrations
 {
     [DbContext(typeof(AgrysyncDbContext))]
-    partial class AgrysyncDbContextModelSnapshot : ModelSnapshot
+    [Migration("20241023092255_up5")]
+    partial class up5
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -56,48 +59,6 @@ namespace agrysync_backend.Migrations
                     b.HasIndex("FieldId");
 
                     b.ToTable("Crop");
-                });
-
-            modelBuilder.Entity("agrysync_backend.Models.CropType", b =>
-                {
-                    b.Property<int>("CropTypeId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("CropTypeId"));
-
-                    b.Property<string>("CropTypeName")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.HasKey("CropTypeId");
-
-                    b.ToTable("CropTypes");
-                });
-
-            modelBuilder.Entity("agrysync_backend.Models.CropVariety", b =>
-                {
-                    b.Property<int>("CropVarietyId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("CropVarietyId"));
-
-                    b.Property<int>("CropTypeId")
-                        .HasColumnType("integer");
-
-                    b.Property<float>("HarvestDuration")
-                        .HasColumnType("real");
-
-                    b.Property<string>("Variety")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.HasKey("CropVarietyId");
-
-                    b.HasIndex("CropTypeId");
-
-                    b.ToTable("CropVarieties");
                 });
 
             modelBuilder.Entity("agrysync_backend.Models.CultivationData", b =>
@@ -513,17 +474,6 @@ namespace agrysync_backend.Migrations
                     b.Navigation("Field");
                 });
 
-            modelBuilder.Entity("agrysync_backend.Models.CropVariety", b =>
-                {
-                    b.HasOne("agrysync_backend.Models.CropType", "CropType")
-                        .WithMany("CropVarieties")
-                        .HasForeignKey("CropTypeId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("CropType");
-                });
-
             modelBuilder.Entity("agrysync_backend.Models.CultivationData", b =>
                 {
                     b.HasOne("agrysync_backend.Models.Crop", "Crop")
@@ -640,11 +590,6 @@ namespace agrysync_backend.Migrations
                     b.Navigation("Feedback");
 
                     b.Navigation("YieldData");
-                });
-
-            modelBuilder.Entity("agrysync_backend.Models.CropType", b =>
-                {
-                    b.Navigation("CropVarieties");
                 });
 
             modelBuilder.Entity("agrysync_backend.Models.Disease", b =>

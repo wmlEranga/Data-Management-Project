@@ -10,6 +10,10 @@ namespace agrysync_backend.Models
         [Key] // Indicates that FieldId is the primary key
         public int FieldId { get; set; }
 
+        // Name of the field
+        [Required] // Ensures that FieldName is a required field
+        public string FieldName { get; set; }
+
         // Foreign key to the Farmer
         public int FarmerId { get; set; }
 

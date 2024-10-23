@@ -28,6 +28,10 @@ namespace agrysync_backend.Data
 
         public DbSet<Feedback> Feedback { get; set; }
 
+        public DbSet<CropType> CropTypes { get; set; }
+
+        public DbSet<CropVariety> CropVarieties { get; set; }
+
 
         // Override this method to configure relationships, table names, etc.
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -95,7 +99,10 @@ namespace agrysync_backend.Data
                 .WithMany(c => c.Feedback)
                 .HasForeignKey(f => f.CropId);
 
-
+            modelBuilder.Entity<CropType>()
+                .HasMany(c => c.CropVarieties)
+                .WithOne(v => v.CropType)
+                .HasForeignKey(v => v.CropTypeId);
 
         }
     }
