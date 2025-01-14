@@ -26,7 +26,7 @@ function Home() {
 
 export default Home;
 */
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Box,
   Button,
@@ -39,19 +39,16 @@ import {
 import { useNavigate } from "react-router-dom";
 import AddCircleIcon from "@mui/icons-material/AddCircle";
 import AddProjectModal from "../components/AddProjectModal";
-
+import config from "../config";
 // Dummy data for projects (replace with real data from API or state)
-const initialProjects = [
-  { id: 1, name: "Project Alpha" },
-  { id: 2, name: "Project Beta" },
-];
 
 function Home() {
-  const [projects, setProjects] = useState(initialProjects);
+  const [projects, setProjects] = useState([]);
   const [open, setOpen] = useState(false);
   const [newProjectName, setNewProjectName] = useState("");
   const [error, setError] = useState("");
   const [openModal, setOpenModal] = useState(false);
+  const userId = sessionStorage.getItem("userId");
   const navigate = useNavigate();
 
   const handleOpenModal = () => setOpenModal(true);
@@ -64,10 +61,19 @@ function Home() {
     setError("");
   };
 
+  useEffect(() => {
+    //get projects from API
+    fetch(`${config.backendUrl}/project/get-projects/${userId}`)
+      .then((response) => response.json())
+      .then((data) => setProjects(data.$values))
+      .catch((error) => console.error("Error fetching projects:", error));
+  }, []);
+
   const handleSaveProject = (newProject) => {
     // Assuming you have an API to handle the project creation
-    fetch("/api/projects", {
+    fetch("/projects", {
       method: "POST",
+
       headers: {
         "Content-Type": "application/json",
       },
@@ -97,9 +103,9 @@ function Home() {
                   backgroundColor: "#56ab2f", // Green theme
                   "&:hover": { backgroundColor: "#8dcf56" },
                 }}
-                onClick={() => navigate(`/project/${project.id}`)}
+                onClick={() => navigate(`/project/${project.cropId}`)}
               >
-                {project.name}
+                {project.cropId + " - " + project.fieldName}
               </Button>
             </Grid>
           ))}

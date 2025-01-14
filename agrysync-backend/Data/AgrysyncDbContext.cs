@@ -32,6 +32,10 @@ namespace agrysync_backend.Data
 
         public DbSet<CropVariety> CropVarieties { get; set; }
 
+        public DbSet<WaterLevel> WaterLevels { get; set; }
+
+        public DbSet<GrowthStage> GrowthStages { get; set; }
+
 
         // Override this method to configure relationships, table names, etc.
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -103,6 +107,16 @@ namespace agrysync_backend.Data
                 .HasMany(c => c.CropVarieties)
                 .WithOne(v => v.CropType)
                 .HasForeignKey(v => v.CropTypeId);
+
+            modelBuilder.Entity<CultivationData>()
+                .HasOne(cd => cd.GrowthStage)
+                .WithMany(gs => gs.CultivationData)
+                .HasForeignKey(cd => cd.GrowthStageId);
+
+            modelBuilder.Entity<CultivationData>()
+                .HasOne(cd => cd.WaterLevel)
+                .WithMany(wl => wl.CultivationData)
+                .HasForeignKey(cd => cd.WaterLevelId);
 
         }
     }

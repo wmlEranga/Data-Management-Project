@@ -47,9 +47,14 @@ namespace agrysync_backend.Controllers
                     SameSite = SameSiteMode.Strict,
                     Secure = true
                 };
+                //get user id
+                var userId = await _dbContext.Farmers
+                    .Where(f => f.FarmerEmail == request.Email)
+                    .Select(f => f.FarmerId)
+                    .FirstOrDefaultAsync();
 
                 Response.Cookies.Append("jwt", token, cookieOptions);
-                return Ok(new { message = "Login successful" });
+                return Ok(new { message = "Login successful", userId = userId });
             }
 
             return Unauthorized();

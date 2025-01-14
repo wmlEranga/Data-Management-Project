@@ -36,8 +36,8 @@ namespace agrysync_backend.Models
         [Range(-180.0, 180.0, ErrorMessage = "Longitude must be between -180 and 180.")]
         public double Longitude { get; set; }
 
-        // Date when the field was added
-        public DateTime DateAdded { get; set; } = DateTime.Now; // Default to current date and time
+        // Date when the field was added(timestamp with timezone)
+        public DateTime DateAdded { get; set; } = DateTime.SpecifyKind(DateTime.Now, DateTimeKind.Utc);
 
         // Navigation property for related Farmer
         public virtual Farmer Farmer { get; set; }

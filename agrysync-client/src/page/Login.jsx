@@ -27,7 +27,11 @@ function LogIn() {
       });
 
       if (response.ok) {
+        //save userid in session storage
+        const data = await response.json();
+        sessionStorage.setItem("userId", data.userId);
         // Login successful, redirect to the home page
+
         navigate("/");
       } else if (response.status === 401) {
         // Unauthorized - wrong credentials

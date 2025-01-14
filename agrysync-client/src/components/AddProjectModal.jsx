@@ -49,11 +49,13 @@ const AddProjectModal = ({ open, handleClose, onSave }) => {
   const [cropPlantingDate, setCropPlantingDate] = useState("");
   const [expectedHarvestDate, setExpectedHarvestDate] = useState("");
   const [season, setSeason] = useState("");
-  const { currentUser } = useAuth(); // Get current farmer details
+
   const [cropTypes, setCropTypes] = useState([]);
   const [selectedCropType, setSelectedCropType] = useState("");
   const [cropVarieties, setCropVarieties] = useState([]);
   const [selectedCropVariety, setSelectedCropVariety] = useState("");
+  //farmer id from session storage
+  const farmerId = sessionStorage.getItem("userId");
 
   useEffect(() => {
     // Fetch crop types from the API
@@ -64,7 +66,6 @@ const AddProjectModal = ({ open, handleClose, onSave }) => {
       })
       .catch((error) => console.error("Error fetching crop types:", error));
   }, []);
-
   const handleCropTypeChange = (event) => {
     const cropTypeId = event.target.value;
     setSelectedCropType(cropTypeId);
@@ -85,9 +86,16 @@ const AddProjectModal = ({ open, handleClose, onSave }) => {
   };
 
   const handleSave = async () => {
+    const selectedCrop = cropTypes.find(
+      (crop) => crop.cropTypeId === selectedCropType
+    );
+    const selectedVariety = cropVarieties.find(
+      (variety) => variety.cropVarietyId === selectedCropVariety
+    );
+
     const projectData = {
       fieldName,
-      fieldSize,
+      fieldSize: parseFloat(fieldSize),
       soilType,
       irrigationType,
       latitude,
@@ -95,16 +103,12 @@ const AddProjectModal = ({ open, handleClose, onSave }) => {
       cropPlantingDate,
       expectedHarvestDate,
       season,
-      //cropType Name and Crop Variety String
-      cropType: cropTypes.find((crop) => crop.cropTypeId === selectedCropType)
-        .cropTypeName,
-      cropVariety: cropVarieties.find(
-        (variety) => variety.cropVarietyId === selectedCropVariety
-      ).variety,
-
-      farmerId: currentUser.farmerId,
+      cropType: selectedCrop ? selectedCrop.cropTypeName : "",
+      cropVariety: selectedVariety ? selectedVariety.variety : "",
+      farmerId: parseInt(farmerId, 10),
     };
-    await fetch(`${config.backendUrl}/Project/AddProject`, {
+
+    await fetch(`${config.backendUrl}/Project`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

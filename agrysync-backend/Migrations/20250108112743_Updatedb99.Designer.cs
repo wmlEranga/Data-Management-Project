@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using agrysync_backend.Data;
@@ -11,9 +12,11 @@ using agrysync_backend.Data;
 namespace agrysync_backend.Migrations
 {
     [DbContext(typeof(AgrysyncDbContext))]
-    partial class AgrysyncDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250108112743_Updatedb99")]
+    partial class Updatedb99
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -114,29 +117,35 @@ namespace agrysync_backend.Migrations
                     b.Property<DateTime>("DateRecorded")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<int?>("DiseaseId")
+                    b.Property<int>("DiseaseId")
                         .HasColumnType("integer");
 
                     b.Property<string>("DiseaseReport")
+                        .IsRequired()
                         .HasMaxLength(500)
                         .HasColumnType("character varying(500)");
 
                     b.Property<string>("FertilizerUsed")
+                        .IsRequired()
                         .HasMaxLength(100)
                         .HasColumnType("character varying(100)");
 
-                    b.Property<int>("GrowthStageId")
-                        .HasColumnType("integer");
+                    b.Property<string>("GrowthStage")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
 
-                    b.Property<int?>("PesticideId")
+                    b.Property<int>("PesticideId")
                         .HasColumnType("integer");
 
                     b.Property<string>("PesticideUsed")
+                        .IsRequired()
                         .HasMaxLength(100)
                         .HasColumnType("character varying(100)");
 
-                    b.Property<int>("WaterLevelId")
-                        .HasColumnType("integer");
+                    b.Property<string>("WaterLevel")
+                        .IsRequired()
+                        .HasColumnType("text");
 
                     b.HasKey("CultivationDataId");
 
@@ -144,11 +153,7 @@ namespace agrysync_backend.Migrations
 
                     b.HasIndex("DiseaseId");
 
-                    b.HasIndex("GrowthStageId");
-
                     b.HasIndex("PesticideId");
-
-                    b.HasIndex("WaterLevelId");
 
                     b.ToTable("CultivationData");
                 });
@@ -310,28 +315,6 @@ namespace agrysync_backend.Migrations
                     b.ToTable("Field");
                 });
 
-            modelBuilder.Entity("agrysync_backend.Models.GrowthStage", b =>
-                {
-                    b.Property<int>("GrowthStageId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("GrowthStageId"));
-
-                    b.Property<string>("Description")
-                        .IsRequired()
-                        .HasMaxLength(1000)
-                        .HasColumnType("character varying(1000)");
-
-                    b.Property<string>("GrowthStageName")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.HasKey("GrowthStageId");
-
-                    b.ToTable("GrowthStages");
-                });
-
             modelBuilder.Entity("agrysync_backend.Models.GuidanceUpdates", b =>
                 {
                     b.Property<int>("GuidanceUpdatesId")
@@ -458,28 +441,6 @@ namespace agrysync_backend.Migrations
                     b.ToTable("StandardGuides");
                 });
 
-            modelBuilder.Entity("agrysync_backend.Models.WaterLevel", b =>
-                {
-                    b.Property<int>("WaterLevelId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("WaterLevelId"));
-
-                    b.Property<string>("Description")
-                        .IsRequired()
-                        .HasMaxLength(1000)
-                        .HasColumnType("character varying(1000)");
-
-                    b.Property<string>("WaterLevelName")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.HasKey("WaterLevelId");
-
-                    b.ToTable("WaterLevels");
-                });
-
             modelBuilder.Entity("agrysync_backend.Models.WeatherData", b =>
                 {
                     b.Property<int>("WeatherDataId")
@@ -576,21 +537,13 @@ namespace agrysync_backend.Migrations
 
                     b.HasOne("agrysync_backend.Models.Disease", "Disease")
                         .WithMany("CultivationData")
-                        .HasForeignKey("DiseaseId");
-
-                    b.HasOne("agrysync_backend.Models.GrowthStage", "GrowthStage")
-                        .WithMany("CultivationData")
-                        .HasForeignKey("GrowthStageId")
+                        .HasForeignKey("DiseaseId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("agrysync_backend.Models.Pesticide", "Pesticide")
                         .WithMany("CultivationData")
-                        .HasForeignKey("PesticideId");
-
-                    b.HasOne("agrysync_backend.Models.WaterLevel", "WaterLevel")
-                        .WithMany("CultivationData")
-                        .HasForeignKey("WaterLevelId")
+                        .HasForeignKey("PesticideId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -598,11 +551,7 @@ namespace agrysync_backend.Migrations
 
                     b.Navigation("Disease");
 
-                    b.Navigation("GrowthStage");
-
                     b.Navigation("Pesticide");
-
-                    b.Navigation("WaterLevel");
                 });
 
             modelBuilder.Entity("agrysync_backend.Models.DiseasePesticideMapping", b =>
@@ -722,11 +671,6 @@ namespace agrysync_backend.Migrations
                     b.Navigation("WeatherData");
                 });
 
-            modelBuilder.Entity("agrysync_backend.Models.GrowthStage", b =>
-                {
-                    b.Navigation("CultivationData");
-                });
-
             modelBuilder.Entity("agrysync_backend.Models.Pesticide", b =>
                 {
                     b.Navigation("CultivationData");
@@ -737,11 +681,6 @@ namespace agrysync_backend.Migrations
             modelBuilder.Entity("agrysync_backend.Models.StandardGuides", b =>
                 {
                     b.Navigation("GuidanceUpdates");
-                });
-
-            modelBuilder.Entity("agrysync_backend.Models.WaterLevel", b =>
-                {
-                    b.Navigation("CultivationData");
                 });
 #pragma warning restore 612, 618
         }

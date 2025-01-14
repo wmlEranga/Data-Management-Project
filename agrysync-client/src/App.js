@@ -8,6 +8,7 @@ import SignUp from "./page/Signup";
 import ProtectedRoute from "./components/ProtectedRoute"; // Import ProtectedRoute
 import Home from "./page/Home";
 import ProjectPage from "./page/ProjectPage";
+import CultivationData from "./page/CultivationData";
 
 function App() {
   return (
@@ -56,6 +57,14 @@ function App() {
                     element={
                       <ProtectedRoute>
                         <ProjectPage />
+                      </ProtectedRoute>
+                    }
+                  />
+                  <Route
+                    path="/cultivation-data/:id"
+                    element={
+                      <ProtectedRoute>
+                        <CultivationData />
                       </ProtectedRoute>
                     }
                   />
