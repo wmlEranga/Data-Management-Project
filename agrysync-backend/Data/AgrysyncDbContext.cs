@@ -36,6 +36,8 @@ namespace agrysync_backend.Data
 
         public DbSet<GrowthStage> GrowthStages { get; set; }
 
+        // NEW: Register PaddyStages
+        public DbSet<PaddyStages> PaddyStages { get; set; }
 
         // Override this method to configure relationships, table names, etc.
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -117,6 +119,7 @@ namespace agrysync_backend.Data
                 .HasOne(cd => cd.WaterLevel)
                 .WithMany(wl => wl.CultivationData)
                 .HasForeignKey(cd => cd.WaterLevelId);
+
 
         }
     }
