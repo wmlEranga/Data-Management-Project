@@ -47,6 +47,7 @@ namespace agrysync_backend.Controllers
                     SameSite = SameSiteMode.Strict,
                     Secure = true
                 };
+                
                 //get user id
                 var userId = await _dbContext.Farmers
                     .Where(f => f.FarmerEmail == request.Email)

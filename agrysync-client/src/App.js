@@ -9,6 +9,7 @@ import ProtectedRoute from "./components/ProtectedRoute"; // Import ProtectedRou
 import Home from "./page/Home";
 import ProjectPage from "./page/ProjectPage";
 import CultivationData from "./page/CultivationData";
+import Dashboard from "./page/Dashboard";
 
 function App() {
   return (
@@ -69,6 +70,7 @@ function App() {
                     }
                   />
                   <Route path="/profile" element={<div>Profile</div>} />
+                  <Route path="/dashboard" element={<Dashboard />} />
                 </Routes>
               </>
             }
