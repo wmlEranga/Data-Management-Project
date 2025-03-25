@@ -16,11 +16,9 @@ namespace agrysync_backend.Models
         public string GrowthStageName { get; set; } = string.Empty;
 
         [StringLength(1000, ErrorMessage = "Description cannot exceed 1000 characters.")]
-        public string Description { get; set; } // Optional description
-
+        public string? Description { get; set; } = string.Empty; // Make nullable and initialize with empty string
 
         // Navigation property for related CultivationData
-
         public ICollection<CultivationData> CultivationData { get; set; }
     }
 }

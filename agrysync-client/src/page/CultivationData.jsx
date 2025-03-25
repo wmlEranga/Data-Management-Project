@@ -27,13 +27,17 @@ function CultivationData() {
   const [cultivationData, setCultivationData] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
-  useEffect(() => {
+  const fetchData = () => {
     fetch(`${config.backendUrl}/cultivation/get-cultivation/${id}`)
       .then((response) => response.json())
       .then((data) => setCultivationData(data.$values))
       .catch((error) =>
         console.error("Error fetching cultivation data:", error)
       );
+  };
+
+  useEffect(() => {
+    fetchData();
   }, [id]);
 
   const handleOpenModal = () => {
@@ -42,6 +46,7 @@ function CultivationData() {
 
   const handleCloseModal = () => {
     setIsModalOpen(false);
+    fetchData(); // Refresh data after modal closes
   };
 
   if (!cultivationData) {
@@ -102,8 +107,8 @@ function CultivationData() {
                     <TableCell>
                       {new Date(data.dateRecorded).toLocaleDateString()}
                     </TableCell>
-                    <TableCell>{data.growthStage}</TableCell>
-                    <TableCell>{data.waterLevel}</TableCell>
+                    <TableCell>{data.growthStageName}</TableCell>
+                    <TableCell>{data.waterLevelName}</TableCell>
                     <TableCell>{data.fertilizerUsed}</TableCell>
                     <TableCell>{data.pesticideUsed}</TableCell>
                     <TableCell>{data.diseaseReport}</TableCell>
@@ -118,6 +123,7 @@ function CultivationData() {
         open={isModalOpen}
         onClose={handleCloseModal}
         projectId={id}
+        cropId={id} // Pass the id as cropId to ensure it gets used
       />
     </Container>
   );

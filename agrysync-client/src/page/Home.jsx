@@ -48,6 +48,7 @@ function Home() {
   const [newProjectName, setNewProjectName] = useState("");
   const [error, setError] = useState("");
   const [openModal, setOpenModal] = useState(false);
+  const [refreshTrigger, setRefreshTrigger] = useState(0);
   const userId = sessionStorage.getItem("userId");
   const navigate = useNavigate();
 
@@ -61,29 +62,62 @@ function Home() {
     setError("");
   };
 
+  const fetchProjects = async () => {
+    try {
+      const response = await fetch(
+        `${config.backendUrl}/project/get-projects/${userId}`
+      );
+      const data = await response.json();
+      if (data && data.$values) {
+        setProjects(data.$values);
+      }
+    } catch (error) {
+      console.error("Error fetching projects:", error);
+    }
+  };
+
   useEffect(() => {
-    //get projects from API
-    fetch(`${config.backendUrl}/project/get-projects/${userId}`)
-      .then((response) => response.json())
-      .then((data) => setProjects(data.$values))
-      .catch((error) => console.error("Error fetching projects:", error));
-  }, []);
+    if (userId) {
+      fetchProjects();
+    }
+  }, [userId, refreshTrigger]);
 
   const handleSaveProject = (newProject) => {
-    // Assuming you have an API to handle the project creation
-    fetch("/projects", {
-      method: "POST",
+    console.log("Saving project:", newProject);
 
+    // Use the correct API endpoint
+    fetch(`${config.backendUrl}/project/add-project`, {
+      method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
       body: JSON.stringify(newProject),
+      credentials: "include",
     })
-      .then((response) => response.json())
-      .then((data) => {
-        setProjects([...projects, data]); // Add new project to the list
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error(`HTTP error! Status: ${response.status}`);
+        }
+
+        // Check if there's content to parse
+        const contentType = response.headers.get("content-type");
+        if (contentType && contentType.includes("application/json")) {
+          return response.json();
+        } else {
+          // If no JSON, just return a success object
+          return { success: true };
+        }
       })
-      .catch((error) => console.error("Error adding project:", error));
+      .then((response) => {
+        console.log("Project added successfully:", response);
+        handleCloseModal();
+        // Update the refresh trigger to fetch updated projects list
+        setRefreshTrigger((prev) => prev + 1);
+      })
+      .catch((error) => {
+        console.error("Error adding project:", error);
+        alert("Failed to add project. Please try again.");
+      });
   };
 
   return (

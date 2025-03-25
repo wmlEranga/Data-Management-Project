@@ -108,17 +108,12 @@ const AddProjectModal = ({ open, handleClose, onSave }) => {
       farmerId: parseInt(farmerId, 10),
     };
 
-    await fetch(`${config.backendUrl}/Project`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(projectData),
-      credentials: "include",
-    });
-    onSave(projectData); // Pass the new project data to the parent component
-
-    handleClose(); // Close modal after save
+    try {
+      // Using onSave instead of direct API call to align with Home.jsx
+      onSave(projectData);
+    } catch (error) {
+      console.error("Error adding project:", error);
+    }
   };
 
   return (

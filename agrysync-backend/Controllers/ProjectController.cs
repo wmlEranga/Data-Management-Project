@@ -82,7 +82,7 @@ namespace agrysync_backend.Controllers
         }
 
         //add new project
-        [HttpPost]
+        [HttpPost("add-project")]
         public async Task<IActionResult> AddProject([FromBody] ProjectDto projectDto)
         {
             try

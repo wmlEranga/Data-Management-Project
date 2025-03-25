@@ -34,10 +34,15 @@ namespace agrysync_backend.Controllers
                     return BadRequest(ModelState);
                 }
 
+                // Ensure the date is in UTC format
+                DateTime utcDate = cultivation.DateRecorded.Kind == DateTimeKind.Unspecified
+                    ? DateTime.SpecifyKind(cultivation.DateRecorded, DateTimeKind.Utc)
+                    : cultivation.DateRecorded.ToUniversalTime();
+
                 var cultivationData = new CultivationData
                 {
                     CropId = cultivation.CropId,
-                    DateRecorded = cultivation.DateRecorded,
+                    DateRecorded = utcDate, // Use the UTC date
                     GrowthStageId = cultivation.GrowthStageId,
                     WaterLevelId = cultivation.WaterLevelId,
                     FertilizerUsed = cultivation.FertilizerUsed,
@@ -50,11 +55,12 @@ namespace agrysync_backend.Controllers
                 _dbContext.CultivationData.Add(cultivationData);
                 _dbContext.SaveChanges();
 
-                return Ok();
+                return Ok(new { message = "Cultivation data saved successfully", id = cultivationData.CultivationDataId });
             }
-            catch
+            catch (Exception ex)
             {
-                return BadRequest();
+                _logger.LogError(ex, "Error creating cultivation data");
+                return StatusCode(500, $"An error occurred while saving cultivation data: {ex.Message}");
             }
         }
 
@@ -85,6 +91,98 @@ namespace agrysync_backend.Controllers
             catch
             {
                 return BadRequest();
+            }
+        }
+
+        [HttpGet("growth-stages")]
+        public async Task<IActionResult> GetGrowthStages()
+        {
+            try
+            {
+                var growthStages = await _dbContext.GrowthStages
+                    .Select(g => new
+                    {
+                        g.GrowthStageId,
+                        g.GrowthStageName,
+                        g.Description
+                    })
+                    .ToListAsync();
+
+                return Ok(growthStages);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error retrieving growth stages");
+                return StatusCode(500, "An error occurred while retrieving growth stages");
+            }
+        }
+
+        [HttpGet("water-levels")]
+        public async Task<IActionResult> GetWaterLevels()
+        {
+            try
+            {
+                var waterLevels = await _dbContext.WaterLevels
+                    .Select(w => new
+                    {
+                        w.WaterLevelId,
+                        w.WaterLevelName,
+                        w.Description
+                    })
+                    .ToListAsync();
+
+                return Ok(waterLevels);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error retrieving water levels");
+                return StatusCode(500, "An error occurred while retrieving water levels");
+            }
+        }
+
+        [HttpGet("diseases")]
+        public async Task<IActionResult> GetDiseases()
+        {
+            try
+            {
+                var diseases = await _dbContext.Diseases
+                    .Select(d => new
+                    {
+                        d.DiseaseId,
+                        d.DiseaseName,
+                        d.Description
+                    })
+                    .ToListAsync();
+
+                return Ok(diseases);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error retrieving diseases");
+                return StatusCode(500, "An error occurred while retrieving diseases");
+            }
+        }
+
+        [HttpGet("pesticides")]
+        public async Task<IActionResult> GetPesticides()
+        {
+            try
+            {
+                var pesticides = await _dbContext.Pesticides
+                    .Select(p => new
+                    {
+                        p.PesticideId,
+                        p.PesticideName,
+                        p.SafetyPrecautions
+                    })
+                    .ToListAsync();
+
+                return Ok(pesticides);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error retrieving pesticides");
+                return StatusCode(500, "An error occurred while retrieving pesticides");
             }
         }
     }

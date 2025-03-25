@@ -85,11 +85,7 @@ namespace agrysync_backend.Controllers
                 .Take(5)
                 .ToListAsync();
 
-            return Ok(fertilizerUsage);                                                                                   
+            return Ok(fertilizerUsage);
         }
-
-
-
-
     }
 }
