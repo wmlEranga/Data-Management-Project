@@ -4,7 +4,7 @@ import os
 
 # Load the data from the CSV file
 # Get the latest file in the directory
-directory = "data/collected_data/"
+directory = "Model 1/data/collected_data/"
 files = [
     f
     for f in os.listdir(directory)
@@ -31,27 +31,33 @@ missing_values = data.isnull().sum()
 print("Missing Values Before Cleaning:")
 print(missing_values)
 
-# Convert 'WaterLevel' from categorical to numerical (e.g., 'High' = 3, 'Moderate' = 2, 'Low' = 1)
-water_level_mapping = {"High": 3, "Moderate": 2, "Low": 1}
-data["WaterLevel"] = data["WaterLevel"].map(water_level_mapping)
-
-# Handle any missing or unmapped values after mapping
-data["WaterLevel"].fillna(data["WaterLevel"].mean(), inplace=True)
-data["Temperature"].fillna(data["Temperature"].mean(), inplace=True)
-data["Humidity"].fillna(data["Humidity"].mean(), inplace=True)
+# Handle missing numerical data
+data["FieldSize"].fillna(data["FieldSize"].mean(), inplace=True)
 data["YieldAmount"].fillna(data["YieldAmount"].mean(), inplace=True)
 
+# Fill missing categorical data with the most common values
+data["SoilType"].fillna(data["SoilType"].mode()[0], inplace=True)
+data["IrrigationType"].fillna(data["IrrigationType"].mode()[0], inplace=True)
+data["CropType"].fillna(data["CropType"].mode()[0], inplace=True)
+data["Variety"].fillna(data["Variety"].mode()[0], inplace=True)
+data["Season"].fillna(data["Season"].mode()[0], inplace=True)
+
 # Option 2: Discard rows with too many missing values (if applicable)
-# Example: Discard rows where more than 3 values are missing
-data = data.dropna(thresh=len(data.columns) - 3)
+# Example: Discard rows where more than 2 values are missing
+data = data.dropna(thresh=len(data.columns) - 2)
 print(f"Data after handling missing values: {data.shape[0]} rows")
+
+# Step 3: Drop the PlantingDate column as it's not needed for the model
+if "PlantingDate" in data.columns:
+    data = data.drop(columns=["PlantingDate"])
+    print("PlantingDate column dropped as it's not needed for modeling")
 
 # Step 3: Normalize and Scale Numerical Values
 scaler = MinMaxScaler()
 
 # Normalize numerical columns
-data[["WaterLevel", "Temperature", "Humidity", "YieldAmount"]] = scaler.fit_transform(
-    data[["WaterLevel", "Temperature", "Humidity", "YieldAmount"]]
+data[["FieldSize", "YieldAmount"]] = scaler.fit_transform(
+    data[["FieldSize", "YieldAmount"]]
 )
 
 # Display the cleaned data
@@ -68,6 +74,6 @@ else:
     print("Data Quality Check: No remaining missing values.")
 
 # Save the cleaned data to a new CSV file
-cleaned_filename = "data/cleaned_data/cleaned_data_backup.csv"
+cleaned_filename = "Model 1/data/cleaned_data/cleaned_data_backup.csv"
 data.to_csv(cleaned_filename, index=False)
 print(f"Cleaned data saved to {cleaned_filename}")

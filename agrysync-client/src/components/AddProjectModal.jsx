@@ -127,13 +127,13 @@ const AddProjectModal = ({ open, handleClose, onSave }) => {
           width: 600,
           maxHeight: "80vh", // Set max height for scrollable content
           bgcolor: "background.paper",
-          borderRadius: 4,
-          boxShadow: 24,
+          borderRadius: "16px",
+          boxShadow: "0px 10px 30px rgba(0, 0, 0, 0.08)",
           p: 4,
           overflowY: "auto", // Make the content scrollable
         }}
       >
-        <Typography variant="h6" color={green[600]} mb={2}>
+        <Typography variant="h5" fontWeight={600} color="#5B86E5" mb={3}>
           Add New Project
         </Typography>
         <Box>
@@ -145,6 +145,11 @@ const AddProjectModal = ({ open, handleClose, onSave }) => {
                 value={fieldName}
                 onChange={(e) => setFieldName(e.target.value)}
                 fullWidth
+                sx={{
+                  "& .MuiOutlinedInput-root": {
+                    borderRadius: "10px",
+                  },
+                }}
               />
             </Grid>
             <Grid item xs={4}>
@@ -155,10 +160,22 @@ const AddProjectModal = ({ open, handleClose, onSave }) => {
                 value={fieldSize}
                 onChange={(e) => setFieldSize(e.target.value)}
                 fullWidth
+                sx={{
+                  "& .MuiOutlinedInput-root": {
+                    borderRadius: "10px",
+                  },
+                }}
               />
             </Grid>
             <Grid item xs={4}>
-              <FormControl fullWidth>
+              <FormControl
+                fullWidth
+                sx={{
+                  "& .MuiOutlinedInput-root": {
+                    borderRadius: "10px",
+                  },
+                }}
+              >
                 <InputLabel>Soil Type</InputLabel>
                 <Select
                   value={soilType}
@@ -166,17 +183,24 @@ const AddProjectModal = ({ open, handleClose, onSave }) => {
                   label="Soil Type"
                   required
                 >
-                  <MenuItem value="Clayey Soil">Clayey Soil</MenuItem>
-                  <MenuItem value="Loamy Soil">Loamy Soil</MenuItem>
-                  <MenuItem value="Silty Soil">Silty Soil</MenuItem>
-                  <MenuItem value="Alluvial Soil">Alluvial Soil</MenuItem>
-                  <MenuItem value="Peaty Soil">Peaty Soil</MenuItem>
-                  <MenuItem value="Sandy Soils">Sandy Soils</MenuItem>
+                  <MenuItem value="Clay">Clay</MenuItem>
+                  <MenuItem value="Loam">Loam</MenuItem>
+                  <MenuItem value="Silt">Silt</MenuItem>
+
+                  <MenuItem value="Peat">Peat</MenuItem>
+                  <MenuItem value="Sand">Sand</MenuItem>
                 </Select>
               </FormControl>
             </Grid>
             <Grid item xs={4}>
-              <FormControl fullWidth>
+              <FormControl
+                fullWidth
+                sx={{
+                  "& .MuiOutlinedInput-root": {
+                    borderRadius: "10px",
+                  },
+                }}
+              >
                 <InputLabel>Irrigation Type</InputLabel>
                 <Select
                   value={irrigationType}
@@ -184,20 +208,23 @@ const AddProjectModal = ({ open, handleClose, onSave }) => {
                   label="Irrigation Type"
                   required
                 >
-                  <MenuItem value="Drip Irrigation">Drip Irrigation</MenuItem>
-                  <MenuItem value="Sprinkler Irrigation">
-                    Sprinkler Irrigation
-                  </MenuItem>
-                  <MenuItem value="Flood Irrigation">Flood Irrigation</MenuItem>
-                  <MenuItem value="Canal Irrigation">Canal Irrigation</MenuItem>
-                  <MenuItem value="Subsurface Irrigation">
-                    Subsurface Irrigation
-                  </MenuItem>
+                  <MenuItem value="Drip">Drip</MenuItem>
+                  <MenuItem value="Sprinkler">Sprinkler</MenuItem>
+                  <MenuItem value="Flood">Flood</MenuItem>
+                  <MenuItem value="Canal">Canal</MenuItem>
+                  <MenuItem value="Rainfed">Rainfed</MenuItem>
                 </Select>
               </FormControl>
             </Grid>
             <Grid item xs={4}>
-              <FormControl fullWidth>
+              <FormControl
+                fullWidth
+                sx={{
+                  "& .MuiOutlinedInput-root": {
+                    borderRadius: "10px",
+                  },
+                }}
+              >
                 <InputLabel>Crop Type</InputLabel>
                 <Select
                   value={selectedCropType}
@@ -217,7 +244,14 @@ const AddProjectModal = ({ open, handleClose, onSave }) => {
               </FormControl>
             </Grid>
             <Grid item xs={4}>
-              <FormControl fullWidth>
+              <FormControl
+                fullWidth
+                sx={{
+                  "& .MuiOutlinedInput-root": {
+                    borderRadius: "10px",
+                  },
+                }}
+              >
                 <InputLabel>Crop Variety</InputLabel>
                 <Select
                   value={selectedCropVariety}
@@ -262,7 +296,14 @@ const AddProjectModal = ({ open, handleClose, onSave }) => {
               />
             </Grid>
             <Grid item xs={4}>
-              <FormControl fullWidth>
+              <FormControl
+                fullWidth
+                sx={{
+                  "& .MuiOutlinedInput-root": {
+                    borderRadius: "10px",
+                  },
+                }}
+              >
                 <InputLabel>Season</InputLabel>
                 <Select
                   value={season}
@@ -277,10 +318,24 @@ const AddProjectModal = ({ open, handleClose, onSave }) => {
             </Grid>
           </Grid>
         </Box>
-        <Typography variant="body1" color={green[600]} mt={3}>
+        <Typography
+          variant="body1"
+          color="#5B86E5"
+          mt={3}
+          mb={1}
+          fontWeight={500}
+        >
           Click on the map to select location:
         </Typography>
-        <Box sx={{ height: 300, mb: 2 }}>
+        <Box
+          sx={{
+            height: 300,
+            mb: 2,
+            borderRadius: "12px",
+            overflow: "hidden",
+            border: "1px solid rgba(91, 134, 229, 0.2)",
+          }}
+        >
           <MapContainer
             center={[51.505, -0.09]} // Default location, can be customized
             zoom={13}
@@ -319,13 +374,17 @@ const AddProjectModal = ({ open, handleClose, onSave }) => {
             />
           </Grid>
         </Grid>
-        <Box mt={2}>
+        <Box mt={3}>
           <Button
             variant="contained"
             fullWidth
             sx={{
-              backgroundColor: green[600],
-              "&:hover": { backgroundColor: green[800] },
+              backgroundColor: "#5B86E5",
+              "&:hover": { backgroundColor: "#3a66c5" },
+              borderRadius: "10px",
+              padding: "10px 0",
+              textTransform: "none",
+              fontWeight: 600,
             }}
             onClick={handleSave}
           >

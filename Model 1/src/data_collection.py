@@ -34,21 +34,13 @@ QUERY = """
         c."CropType", 
         c."Variety", 
         c."PlantingDate", 
-        c."Season", 
-        cd."DateRecorded", 
-        cd."GrowthStage", 
-        cd."WaterLevel", 
-        cd."FertilizerUsed", 
-        w."Temperature", 
-        w."Humidity", 
-        w."Rainfall", 
-        y."HarvestDate", 
-        y."YieldAmount", 
-        y."GrainQuality" 
+        c."Season",
+        f."FieldSize",
+        f."SoilType",
+        f."IrrigationType",
+        y."YieldAmount"
     FROM "Crop" c
-    JOIN "CultivationData" cd ON c."CropId" = cd."CropId"
     JOIN "Field" f ON c."FieldId" = f."FieldId"  
-    JOIN "WeatherData" w ON f."FieldId" = w."FieldId"  
     JOIN "YieldData" y ON c."CropId" = y."CropId";  
 """
 
@@ -72,7 +64,13 @@ def fetch_data():
 
         # Generate a timestamped filename for the CSV
         timestamp = datetime.now().strftime("%Y%m%d%H%M")
-        filename = f"data/collected_data/data_backup_{timestamp}.csv"
+
+        # Create directory if it doesn't exist
+        data_dir = "Model 1/data/collected_data"
+        os.makedirs(data_dir, exist_ok=True)
+
+        # Use the correct relative path from the script's location
+        filename = os.path.join(data_dir, f"data_backup_{timestamp}.csv")
 
         # Save data to CSV file
         with open(filename, mode="w", newline="") as file:
@@ -81,9 +79,12 @@ def fetch_data():
             writer.writerows(data)  # Write data rows
 
         print(f"Data successfully collected and saved to {filename}")
+        logging.info(f"Data successfully collected and saved to {filename}")
 
     except Exception as error:
-        print(f"Error fetching data: {error}")
+        error_message = f"Error fetching data: {error}"
+        print(error_message)
+        logging.error(error_message)
 
     finally:
         # Ensure the connection is closed properly

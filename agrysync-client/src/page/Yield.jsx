@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   TextField,
   MenuItem,
@@ -8,6 +8,7 @@ import {
   Grid,
   Paper,
   Box,
+  CircularProgress,
 } from "@mui/material";
 import BarChartIcon from "@mui/icons-material/BarChart";
 import config from "../config";
@@ -18,15 +19,60 @@ const YieldPrediction = () => {
     CropType: "",
     Variety: "",
     Season: "",
-    GrowthStage: "",
-    WaterLevel: "",
-    FertilizerUsed: "",
-    Temperature: "",
-    Humidity: "",
-    Rainfall: "",
+    FieldSize: "",
+    SoilType: "",
+    IrrigationType: "",
   });
 
   const [predictedYield, setPredictedYield] = useState(null);
+  const [cropTypes, setCropTypes] = useState([]);
+  const [varieties, setVarieties] = useState([]);
+  const [loading, setLoading] = useState(false);
+
+  // Fetch crop types and varieties on component mount
+  useEffect(() => {
+    const fetchCropTypes = async () => {
+      try {
+        setLoading(true);
+        const response = await fetch("http://localhost:5178/Crop/GetCropTypes");
+        if (response.ok) {
+          const data = await response.json();
+          if (data.$values && Array.isArray(data.$values)) {
+            setCropTypes(data.$values);
+          }
+        } else {
+          console.error("Failed to fetch crop types");
+        }
+      } catch (error) {
+        console.error("Error fetching crop types:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchCropTypes();
+  }, []);
+
+  // Update varieties when crop type changes
+  useEffect(() => {
+    if (formData.CropType) {
+      const selectedCropType = cropTypes.find(
+        (type) => type.cropTypeName === formData.CropType
+      );
+
+      if (
+        selectedCropType &&
+        selectedCropType.cropVarieties &&
+        selectedCropType.cropVarieties.$values
+      ) {
+        setVarieties(selectedCropType.cropVarieties.$values);
+        // Reset variety selection when crop type changes
+        setFormData((prev) => ({ ...prev, Variety: "" }));
+      } else {
+        setVarieties([]);
+      }
+    }
+  }, [formData.CropType, cropTypes]);
 
   // Handle input change
   const handleChange = (e) => {
@@ -39,29 +85,55 @@ const YieldPrediction = () => {
 
   // Check if all fields are filled
   const isFormComplete = () => {
-    return Object.values(formData).every((field) => field.trim() !== "");
+    return Object.values(formData).every(
+      (field) => field.toString().trim() !== ""
+    );
   };
 
   // Handle form submission
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
+      // Convert FieldSize to number before sending
+      const requestData = {
+        ...formData,
+        FieldSize: parseFloat(formData.FieldSize),
+      };
+
       const response = await fetch(
         `${config.backendUrl}/YieldPrediction/predict-yield`,
-
         {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
           },
-          body: JSON.stringify(formData),
+          body: JSON.stringify(requestData),
           credentials: "include",
         }
       );
 
       if (response.ok) {
         const data = await response.json();
-        setPredictedYield(data.predicted_yield);
+        if (data.prediction) {
+          // Parse the prediction string to extract the yield value
+          try {
+            const predictionObj = JSON.parse(
+              data.prediction.replace(/(\w+):/g, '"$1":')
+            );
+            setPredictedYield(predictionObj.predicted_yield);
+          } catch (parseError) {
+            console.error("Error parsing prediction:", parseError);
+            // Fallback: try to extract using regex if JSON parsing fails
+            const match = data.prediction.match(/predicted_yield:\s*([\d.]+)/);
+            if (match && match[1]) {
+              setPredictedYield(parseFloat(match[1]));
+            } else {
+              console.error("Could not extract prediction value");
+            }
+          }
+        } else {
+          console.error("No prediction data in response:", data);
+        }
       } else {
         console.error("Error in fetching the prediction.");
       }
@@ -113,222 +185,189 @@ const YieldPrediction = () => {
             </Typography>
           </Box>
 
-          <form onSubmit={handleSubmit}>
-            <Grid container spacing={3}>
-              {/* First Row */}
-              <Grid item xs={12} sm={6}>
-                <TextField
-                  select
-                  label="Crop Type"
-                  name="CropType"
-                  value={formData.CropType}
-                  onChange={handleChange}
-                  fullWidth
-                  sx={{
-                    "& .MuiOutlinedInput-root": {
-                      borderRadius: "10px",
-                      "&:hover .MuiOutlinedInput-notchedOutline": {
-                        borderColor: "#5B86E5",
+          {loading ? (
+            <Box sx={{ display: "flex", justifyContent: "center", p: 3 }}>
+              <CircularProgress />
+            </Box>
+          ) : (
+            <form onSubmit={handleSubmit}>
+              <Grid container spacing={3}>
+                {/* First Row */}
+                <Grid item xs={12} sm={6}>
+                  <TextField
+                    select
+                    label="Crop Type"
+                    name="CropType"
+                    value={formData.CropType}
+                    onChange={handleChange}
+                    fullWidth
+                    sx={{
+                      "& .MuiOutlinedInput-root": {
+                        borderRadius: "10px",
+                        "&:hover .MuiOutlinedInput-notchedOutline": {
+                          borderColor: "#5B86E5",
+                        },
                       },
-                    },
-                  }}
-                >
-                  <MenuItem value="Paddy">Paddy</MenuItem>
-                  <MenuItem value="Wheat">Wheat</MenuItem>
-                </TextField>
+                    }}
+                  >
+                    {cropTypes.map((type) => (
+                      <MenuItem key={type.cropTypeId} value={type.cropTypeName}>
+                        {type.cropTypeName}
+                      </MenuItem>
+                    ))}
+                  </TextField>
+                </Grid>
+
+                <Grid item xs={12} sm={6}>
+                  <TextField
+                    select
+                    label="Variety"
+                    name="Variety"
+                    value={formData.Variety}
+                    onChange={handleChange}
+                    fullWidth
+                    disabled={!formData.CropType}
+                    sx={{
+                      "& .MuiOutlinedInput-root": {
+                        borderRadius: "10px",
+                        "&:hover .MuiOutlinedInput-notchedOutline": {
+                          borderColor: "#5B86E5",
+                        },
+                      },
+                    }}
+                  >
+                    {varieties.map((v) => (
+                      <MenuItem key={v.cropVarietyId} value={v.variety}>
+                        {v.variety}
+                      </MenuItem>
+                    ))}
+                  </TextField>
+                </Grid>
+
+                {/* Second Row */}
+                <Grid item xs={12} sm={6}>
+                  <TextField
+                    select
+                    label="Season"
+                    name="Season"
+                    value={formData.Season}
+                    onChange={handleChange}
+                    fullWidth
+                    sx={{
+                      "& .MuiOutlinedInput-root": {
+                        borderRadius: "10px",
+                        "&:hover .MuiOutlinedInput-notchedOutline": {
+                          borderColor: "#5B86E5",
+                        },
+                      },
+                    }}
+                  >
+                    <MenuItem value="Yala">Yala</MenuItem>
+                    <MenuItem value="Maha">Maha</MenuItem>
+                  </TextField>
+                </Grid>
+
+                <Grid item xs={12} sm={6}>
+                  <TextField
+                    label="Field Size (hectares)"
+                    name="FieldSize"
+                    type="number"
+                    inputProps={{ step: "0.01" }}
+                    value={formData.FieldSize}
+                    onChange={handleChange}
+                    fullWidth
+                    sx={{
+                      "& .MuiOutlinedInput-root": {
+                        borderRadius: "10px",
+                        "&:hover .MuiOutlinedInput-notchedOutline": {
+                          borderColor: "#5B86E5",
+                        },
+                      },
+                    }}
+                  />
+                </Grid>
+
+                {/* Third Row */}
+                <Grid item xs={12} sm={6}>
+                  <TextField
+                    select
+                    label="Soil Type"
+                    name="SoilType"
+                    value={formData.SoilType}
+                    onChange={handleChange}
+                    fullWidth
+                    sx={{
+                      "& .MuiOutlinedInput-root": {
+                        borderRadius: "10px",
+                        "&:hover .MuiOutlinedInput-notchedOutline": {
+                          borderColor: "#5B86E5",
+                        },
+                      },
+                    }}
+                  >
+                    <MenuItem value="Clay">Clay</MenuItem>
+                    <MenuItem value="Loam">Loam</MenuItem>
+                    <MenuItem value="Sandy">Sandy</MenuItem>
+                    <MenuItem value="Silt">Silt</MenuItem>
+                    <MenuItem value="Peat">Peat</MenuItem>
+                  </TextField>
+                </Grid>
+
+                <Grid item xs={12} sm={6}>
+                  <TextField
+                    select
+                    label="Irrigation Type"
+                    name="IrrigationType"
+                    value={formData.IrrigationType}
+                    onChange={handleChange}
+                    fullWidth
+                    sx={{
+                      "& .MuiOutlinedInput-root": {
+                        borderRadius: "10px",
+                        "&:hover .MuiOutlinedInput-notchedOutline": {
+                          borderColor: "#5B86E5",
+                        },
+                      },
+                    }}
+                  >
+                    <MenuItem value="Drip">Drip</MenuItem>
+                    <MenuItem value="Flood">Flood</MenuItem>
+                    <MenuItem value="Sprinkler">Sprinkler</MenuItem>
+                    <MenuItem value="Rainfed">Rainfed</MenuItem>
+                    <MenuItem value="Canal">Canal</MenuItem>
+                  </TextField>
+                </Grid>
               </Grid>
 
-              <Grid item xs={12} sm={6}>
-                <TextField
-                  label="Variety"
-                  name="Variety"
-                  value={formData.Variety}
-                  onChange={handleChange}
-                  fullWidth
-                  sx={{
-                    "& .MuiOutlinedInput-root": {
-                      borderRadius: "10px",
-                      "&:hover .MuiOutlinedInput-notchedOutline": {
-                        borderColor: "#5B86E5",
-                      },
-                    },
-                  }}
-                />
-              </Grid>
-
-              {/* Second Row */}
-              <Grid item xs={12} sm={6}>
-                <TextField
-                  select
-                  label="Season"
-                  name="Season"
-                  value={formData.Season}
-                  onChange={handleChange}
-                  fullWidth
-                  sx={{
-                    "& .MuiOutlinedInput-root": {
-                      borderRadius: "10px",
-                      "&:hover .MuiOutlinedInput-notchedOutline": {
-                        borderColor: "#5B86E5",
-                      },
-                    },
-                  }}
-                >
-                  <MenuItem value="Yala">Yala</MenuItem>
-                  <MenuItem value="Maha">Maha</MenuItem>
-                </TextField>
-              </Grid>
-
-              <Grid item xs={12} sm={6}>
-                <TextField
-                  select
-                  label="Growth Stage"
-                  name="GrowthStage"
-                  value={formData.GrowthStage}
-                  onChange={handleChange}
-                  fullWidth
-                  sx={{
-                    "& .MuiOutlinedInput-root": {
-                      borderRadius: "10px",
-                      "&:hover .MuiOutlinedInput-notchedOutline": {
-                        borderColor: "#5B86E5",
-                      },
-                    },
-                  }}
-                >
-                  <MenuItem value="Seedling">Seedling</MenuItem>
-                  <MenuItem value="Mature">Mature</MenuItem>
-                </TextField>
-              </Grid>
-
-              {/* Third Row */}
-              <Grid item xs={12} sm={6}>
-                <TextField
-                  select
-                  label="Water Level"
-                  name="WaterLevel"
-                  value={formData.WaterLevel}
-                  onChange={handleChange}
-                  fullWidth
-                  sx={{
-                    "& .MuiOutlinedInput-root": {
-                      borderRadius: "10px",
-                      "&:hover .MuiOutlinedInput-notchedOutline": {
-                        borderColor: "#5B86E5",
-                      },
-                    },
-                  }}
-                >
-                  <MenuItem value="Low">Low</MenuItem>
-                  <MenuItem value="Medium">Medium</MenuItem>
-                  <MenuItem value="High">High</MenuItem>
-                </TextField>
-              </Grid>
-
-              <Grid item xs={12} sm={6}>
-                <TextField
-                  label="Fertilizer Used"
-                  name="FertilizerUsed"
-                  value={formData.FertilizerUsed}
-                  onChange={handleChange}
-                  fullWidth
-                  sx={{
-                    "& .MuiOutlinedInput-root": {
-                      borderRadius: "10px",
-                      "&:hover .MuiOutlinedInput-notchedOutline": {
-                        borderColor: "#5B86E5",
-                      },
-                    },
-                  }}
-                />
-              </Grid>
-
-              {/* Fourth Row */}
-              <Grid item xs={12} sm={4}>
-                <TextField
-                  label="Temperature (°C)"
-                  name="Temperature"
-                  type="number"
-                  value={formData.Temperature}
-                  onChange={handleChange}
-                  fullWidth
-                  sx={{
-                    "& .MuiOutlinedInput-root": {
-                      borderRadius: "10px",
-                      "&:hover .MuiOutlinedInput-notchedOutline": {
-                        borderColor: "#5B86E5",
-                      },
-                    },
-                  }}
-                />
-              </Grid>
-
-              <Grid item xs={12} sm={4}>
-                <TextField
-                  label="Humidity (%)"
-                  name="Humidity"
-                  type="number"
-                  value={formData.Humidity}
-                  onChange={handleChange}
-                  fullWidth
-                  sx={{
-                    "& .MuiOutlinedInput-root": {
-                      borderRadius: "10px",
-                      "&:hover .MuiOutlinedInput-notchedOutline": {
-                        borderColor: "#5B86E5",
-                      },
-                    },
-                  }}
-                />
-              </Grid>
-
-              <Grid item xs={12} sm={4}>
-                <TextField
-                  label="Rainfall (mm)"
-                  name="Rainfall"
-                  type="number"
-                  value={formData.Rainfall}
-                  onChange={handleChange}
-                  fullWidth
-                  sx={{
-                    "& .MuiOutlinedInput-root": {
-                      borderRadius: "10px",
-                      "&:hover .MuiOutlinedInput-notchedOutline": {
-                        borderColor: "#5B86E5",
-                      },
-                    },
-                  }}
-                />
-              </Grid>
-            </Grid>
-
-            {/* Submit Button */}
-            <Button
-              type="submit"
-              variant="contained"
-              sx={{
-                marginTop: 4,
-                padding: "12px",
-                fontWeight: "600",
-                borderRadius: "10px",
-                background: "linear-gradient(90deg, #5B86E5 30%, #36D1DC 100%)",
-                boxShadow: "0 4px 15px rgba(91, 134, 229, 0.3)",
-                transition: "all 0.3s ease",
-                "&:hover": {
-                  boxShadow: "0 6px 20px rgba(91, 134, 229, 0.4)",
-                  transform: "translateY(-2px)",
-                },
-                "&.Mui-disabled": {
-                  background: "#e0e0e0",
-                  color: "#a0a0a0",
-                },
-              }}
-              fullWidth
-              disabled={!isFormComplete()}
-            >
-              Predict Yield
-            </Button>
-          </form>
+              {/* Submit Button */}
+              <Button
+                type="submit"
+                variant="contained"
+                sx={{
+                  marginTop: 4,
+                  padding: "12px",
+                  fontWeight: "600",
+                  borderRadius: "10px",
+                  background:
+                    "linear-gradient(90deg, #5B86E5 30%, #36D1DC 100%)",
+                  boxShadow: "0 4px 15px rgba(91, 134, 229, 0.3)",
+                  transition: "all 0.3s ease",
+                  "&:hover": {
+                    boxShadow: "0 6px 20px rgba(91, 134, 229, 0.4)",
+                    transform: "translateY(-2px)",
+                  },
+                  "&.Mui-disabled": {
+                    background: "#e0e0e0",
+                    color: "#a0a0a0",
+                  },
+                }}
+                fullWidth
+                disabled={!isFormComplete()}
+              >
+                Predict Yield
+              </Button>
+            </form>
+          )}
 
           {predictedYield && (
             <Box
@@ -360,7 +399,7 @@ const YieldPrediction = () => {
                   color: "#3a3a3a",
                 }}
               >
-                {predictedYield.toFixed(2)}{" "}
+                {parseFloat(predictedYield).toFixed(2)}{" "}
                 <span style={{ fontSize: "1rem", fontWeight: "normal" }}>
                   tons/hectare
                 </span>

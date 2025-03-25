@@ -6,9 +6,9 @@ from sklearn.preprocessing import StandardScaler
 app = Flask(__name__)
 
 # Load the model, scaler, and label encoders
-MODEL_PATH = "models/versioned/current_model.pkl"
-SCALER_PATH = "models/versioned/current_scaler.pkl"
-ENCODERS_PATH = "models/versioned/current_label_encoders.pkl"
+MODEL_PATH = "Model 1/models/versioned/current_model.pkl"
+SCALER_PATH = "Model 1/models/versioned/current_scaler.pkl"
+ENCODERS_PATH = "Model 1/models/versioned/current_label_encoders.pkl"
 
 model = joblib.load(MODEL_PATH)
 scaler = joblib.load(SCALER_PATH)
@@ -21,12 +21,9 @@ def prepare_input(input_data, scaler, label_encoders):
         "CropType",
         "Variety",
         "Season",
-        "GrowthStage",
-        "WaterLevel",
-        "FertilizerUsed",
-        "Temperature",
-        "Humidity",
-        "Rainfall",
+        "FieldSize",
+        "SoilType",
+        "IrrigationType",
     ]
     for feature in expected_features:
         if feature not in input_df.columns:
@@ -34,11 +31,8 @@ def prepare_input(input_data, scaler, label_encoders):
     for column in label_encoders:
         if column in input_df.columns:
             input_df[column] = label_encoders[column].transform(input_df[column])
-    water_level_mapping = {"Low": 0.0, "Medium": 0.5, "High": 1.0}
-    if "WaterLevel" in input_df.columns:
-        input_df["WaterLevel"] = input_df["WaterLevel"].map(water_level_mapping)
     input_df = input_df[expected_features]
-    numeric_features = ["Temperature", "Humidity", "Rainfall"]
+    numeric_features = ["FieldSize"]
     for feature in numeric_features:
         input_df[feature] = pd.to_numeric(input_df[feature], errors="coerce")
     scaled_input = scaler.transform(input_df)

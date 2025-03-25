@@ -1,0 +1,11 @@
+CropId,CropType,Variety,PlantingDate,Season,FieldSize,SoilType,IrrigationType,YieldAmount
+29,Red Rice,Kalu Heenati,2023-12-30 00:00:00+00:00,Yala,5.6,Clay,Canal,1650
+26,Nadu,Bg 94-1,2023-09-20 00:00:00+00:00,Maha,2.5,Silt,Sprinkler,1700
+25,Nadu,Bg 300,2023-08-15 00:00:00+00:00,Yala,6.4,Sandy,Tube Well,1400
+30,Red Rice,Masuran,2024-01-18 00:00:00+00:00,Maha,3.9,Sandy,Tube Well,1450
+23,Samba,Bg 358,2023-06-10 00:00:00+00:00,Yala,5.2,Loam,Rain-fed,1500
+27,Kekulu,Bg 251,2023-10-05 00:00:00+00:00,Yala,4.0,Loam,Drip,1800
+24,Samba,Bg 403,2023-07-12 00:00:00+00:00,Maha,3.8,Clay,Canal,1600
+31,Basmati,Lanka Basmati 1,2024-02-02 00:00:00+00:00,Yala,6.2,Silt,Sprinkler,1750
+28,Kekulu,Bg 379-2,2023-11-22 00:00:00+00:00,Maha,7.1,Peat,Rain-fed,1550
+32,Basmati,Bg 360,2024-02-20 00:00:00+00:00,Maha,4.8,Loam,Drip,1500

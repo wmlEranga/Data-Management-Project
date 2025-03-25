@@ -27,7 +27,7 @@ namespace agrysync_backend.Controllers
 
 
         // POST /yield-prediction/
-        //eg payload:  {"CropType": "Wheat","Variety": "444","Season": "Yala","GrowthStage": "Seedling","WaterLevel": "Low","FertilizerUsed": "4444","Temperature": "9","Humidity": "9","Rainfall": "9"}
+        //eg payload:  {"CropType": "Wheat","Variety": "444","Season": "Yala","FieldSize": "2.5","SoilType": "Clay","IrrigationType": "Drip"}
         [HttpPost("predict-yield")]
         public async Task<IActionResult> PredictYield([FromBody] YieldPredictionRequest request)
         {
@@ -67,12 +67,9 @@ namespace agrysync_backend.Controllers
         public string CropType { get; set; }
         public string Variety { get; set; }
         public string Season { get; set; }
-        public string GrowthStage { get; set; }
-        public string WaterLevel { get; set; }
-        public string FertilizerUsed { get; set; }
-        public string Temperature { get; set; }
-        public string Humidity { get; set; }
-        public string Rainfall { get; set; }
+        public double FieldSize { get; set; }
+        public string SoilType { get; set; }
+        public string IrrigationType { get; set; }
     }
 }
 

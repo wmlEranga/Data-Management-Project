@@ -33,12 +33,9 @@ def prepare_input(input_data, scaler, label_encoders):
         "CropType",
         "Variety",
         "Season",
-        "GrowthStage",
-        "WaterLevel",
-        "FertilizerUsed",
-        "Temperature",
-        "Humidity",
-        "Rainfall",
+        "FieldSize",
+        "SoilType",
+        "IrrigationType",
     ]
 
     # Ensure all expected features are present in input DataFrame
@@ -51,18 +48,12 @@ def prepare_input(input_data, scaler, label_encoders):
         if column in input_df.columns:
             input_df[column] = label_encoders[column].transform(input_df[column])
 
-    # Map WaterLevel to float values
-    water_level_mapping = {"Low": 0.0, "Medium": 0.5, "High": 1.0}
-
-    if "WaterLevel" in input_df.columns:
-        input_df["WaterLevel"] = input_df["WaterLevel"].map(water_level_mapping)
-
     # Ensure the DataFrame has the correct order of features
     input_df = input_df[expected_features]
 
     # Check for numeric types before scaling
     # Ensure all non-categorical features are numeric
-    numeric_features = ["Temperature", "Humidity", "Rainfall"]
+    numeric_features = ["FieldSize"]
     for feature in numeric_features:
         input_df[feature] = pd.to_numeric(input_df[feature], errors="coerce")
 
@@ -78,9 +69,11 @@ def make_prediction(model, input_data):
 
 
 if __name__ == "__main__":
-    MODEL_PATH = "models/versioned/current_model.pkl"
-    SCALER_PATH = "models/versioned/current_scaler.pkl"
-    ENCODERS_PATH = "models/versioned/current_label_encoders.pkl"  # Load label encoders
+    MODEL_PATH = "Model 1/models/versioned/current_model.pkl"
+    SCALER_PATH = "Model 1/models/versioned/current_scaler.pkl"
+    ENCODERS_PATH = (
+        "Model 1/models/versioned/current_label_encoders.pkl"  # Load label encoders
+    )
 
     # Load the model, scaler, and label encoders
     model = load_model(MODEL_PATH)
@@ -89,15 +82,12 @@ if __name__ == "__main__":
 
     # Example input data with all necessary features
     input_data = {
-        "CropType": "Paddy",
-        "Variety": "IR64",  # Make sure this exists in the label encoders
-        "Season": "Yala",  # Make sure this exists in the label encoders
-        "GrowthStage": "Mature",
-        "WaterLevel": "Low",  # This needs to be in label encoders as well
-        "FertilizerUsed": "Organic Fertilizer",
-        "Temperature": 30.2,
-        "Humidity": 74.0,
-        "Rainfall": 2.0,
+        "CropType": "Samba",
+        "Variety": "Bg 358",
+        "Season": "Yala",
+        "FieldSize": 5.2,
+        "SoilType": "Loam",
+        "IrrigationType": "Sprinkler",
     }
 
     # Prepare input data (scaling and transformation)

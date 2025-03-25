@@ -22,11 +22,13 @@ const style = {
   top: "50%",
   left: "50%",
   transform: "translate(-50%, -50%)",
-  width: 400,
+  width: 500,
+  maxHeight: "80vh",
   bgcolor: "background.paper",
-  border: "2px solid #000",
-  boxShadow: 24,
+  borderRadius: "16px",
+  boxShadow: "0px 10px 30px rgba(0, 0, 0, 0.08)",
   p: 4,
+  overflowY: "auto",
 };
 
 function AddCultivationModal({ open, onClose, projectId, cropId }) {
@@ -288,12 +290,12 @@ function AddCultivationModal({ open, onClose, projectId, cropId }) {
     <>
       <Modal open={open} onClose={onClose}>
         <Box sx={style}>
-          <Typography variant="h6" component="h2" gutterBottom>
-            Add Cultivation Data{" "}
-            {formData.cropId ? `for Crop ${formData.cropId}` : ""}
+          <Typography variant="h5" fontWeight={600} color="#5B86E5" mb={3}>
+            Add Cultivation Data
+            {formData.cropId ? ` for Crop ${formData.cropId}` : ""}
           </Typography>
           {submitError && (
-            <Alert severity="error" sx={{ mb: 2 }}>
+            <Alert severity="error" sx={{ mb: 2, borderRadius: "10px" }}>
               {submitError}
             </Alert>
           )}
@@ -311,16 +313,30 @@ function AddCultivationModal({ open, onClose, projectId, cropId }) {
                     shrink: true,
                   }}
                   required
+                  sx={{
+                    "& .MuiOutlinedInput-root": {
+                      borderRadius: "10px",
+                    },
+                  }}
                 />
               </Grid>
               <Grid item xs={12}>
-                <FormControl fullWidth required error={!!error.growthStages}>
+                <FormControl
+                  fullWidth
+                  required
+                  error={!!error.growthStages}
+                  sx={{
+                    "& .MuiOutlinedInput-root": {
+                      borderRadius: "10px",
+                    },
+                  }}
+                >
                   <InputLabel id="growth-stage-label">Growth Stage</InputLabel>
                   {loading.growthStages ? (
                     <Box
                       sx={{ display: "flex", justifyContent: "center", pt: 2 }}
                     >
-                      <CircularProgress size={24} />
+                      <CircularProgress size={24} sx={{ color: "#5B86E5" }} />
                     </Box>
                   ) : (
                     <Select
@@ -351,13 +367,22 @@ function AddCultivationModal({ open, onClose, projectId, cropId }) {
                 </FormControl>
               </Grid>
               <Grid item xs={12}>
-                <FormControl fullWidth required error={!!error.waterLevels}>
+                <FormControl
+                  fullWidth
+                  required
+                  error={!!error.waterLevels}
+                  sx={{
+                    "& .MuiOutlinedInput-root": {
+                      borderRadius: "10px",
+                    },
+                  }}
+                >
                   <InputLabel id="water-level-label">Water Level</InputLabel>
                   {loading.waterLevels ? (
                     <Box
                       sx={{ display: "flex", justifyContent: "center", pt: 2 }}
                     >
-                      <CircularProgress size={24} />
+                      <CircularProgress size={24} sx={{ color: "#5B86E5" }} />
                     </Box>
                   ) : (
                     <Select
@@ -394,6 +419,11 @@ function AddCultivationModal({ open, onClose, projectId, cropId }) {
                   value={formData.fertilizerUsed}
                   onChange={handleChange}
                   fullWidth
+                  sx={{
+                    "& .MuiOutlinedInput-root": {
+                      borderRadius: "10px",
+                    },
+                  }}
                 />
               </Grid>
               <Grid item xs={12}>
@@ -403,6 +433,11 @@ function AddCultivationModal({ open, onClose, projectId, cropId }) {
                   value={formData.pesticideUsed}
                   onChange={handleChange}
                   fullWidth
+                  sx={{
+                    "& .MuiOutlinedInput-root": {
+                      borderRadius: "10px",
+                    },
+                  }}
                 />
               </Grid>
               <Grid item xs={12}>
@@ -414,16 +449,29 @@ function AddCultivationModal({ open, onClose, projectId, cropId }) {
                   fullWidth
                   multiline
                   rows={2}
+                  sx={{
+                    "& .MuiOutlinedInput-root": {
+                      borderRadius: "10px",
+                    },
+                  }}
                 />
               </Grid>
               <Grid item xs={12}>
-                <FormControl fullWidth error={!!error.diseases}>
+                <FormControl
+                  fullWidth
+                  error={!!error.diseases}
+                  sx={{
+                    "& .MuiOutlinedInput-root": {
+                      borderRadius: "10px",
+                    },
+                  }}
+                >
                   <InputLabel id="disease-label">Disease</InputLabel>
                   {loading.diseases ? (
                     <Box
                       sx={{ display: "flex", justifyContent: "center", pt: 2 }}
                     >
-                      <CircularProgress size={24} />
+                      <CircularProgress size={24} sx={{ color: "#5B86E5" }} />
                     </Box>
                   ) : (
                     <Select
@@ -455,13 +503,21 @@ function AddCultivationModal({ open, onClose, projectId, cropId }) {
                 </FormControl>
               </Grid>
               <Grid item xs={12}>
-                <FormControl fullWidth error={!!error.pesticides}>
+                <FormControl
+                  fullWidth
+                  error={!!error.pesticides}
+                  sx={{
+                    "& .MuiOutlinedInput-root": {
+                      borderRadius: "10px",
+                    },
+                  }}
+                >
                   <InputLabel id="pesticide-label">Pesticide</InputLabel>
                   {loading.pesticides ? (
                     <Box
                       sx={{ display: "flex", justifyContent: "center", pt: 2 }}
                     >
-                      <CircularProgress size={24} />
+                      <CircularProgress size={24} sx={{ color: "#5B86E5" }} />
                     </Box>
                   ) : (
                     <Select
@@ -493,19 +549,41 @@ function AddCultivationModal({ open, onClose, projectId, cropId }) {
                 </FormControl>
               </Grid>
             </Grid>
-            <Box sx={{ mt: 2, display: "flex", justifyContent: "flex-end" }}>
+            <Box
+              sx={{
+                mt: 3,
+                display: "flex",
+                justifyContent: "flex-end",
+                gap: 2,
+              }}
+            >
               <Button
                 type="button"
                 onClick={onClose}
-                sx={{ mr: 1 }}
+                sx={{
+                  borderRadius: "10px",
+                  px: 3,
+                  textTransform: "none",
+                  fontWeight: 500,
+                  border: "1px solid rgba(91, 134, 229, 0.5)",
+                }}
                 disabled={submitting}
+                variant="outlined"
+                color="inherit"
               >
                 Cancel
               </Button>
               <Button
                 type="submit"
                 variant="contained"
-                color="primary"
+                sx={{
+                  backgroundColor: "#5B86E5",
+                  "&:hover": { backgroundColor: "#3a66c5" },
+                  borderRadius: "10px",
+                  px: 3,
+                  textTransform: "none",
+                  fontWeight: 600,
+                }}
                 disabled={submitting}
               >
                 {submitting ? <CircularProgress size={24} /> : "Submit"}
@@ -519,11 +597,12 @@ function AddCultivationModal({ open, onClose, projectId, cropId }) {
         open={submitSuccess}
         autoHideDuration={3000}
         onClose={handleCloseSnackbar}
+        anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
       >
         <Alert
           onClose={handleCloseSnackbar}
           severity="success"
-          sx={{ width: "100%" }}
+          sx={{ width: "100%", borderRadius: "10px" }}
         >
           Cultivation data submitted successfully!
         </Alert>
