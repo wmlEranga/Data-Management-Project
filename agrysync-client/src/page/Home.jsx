@@ -1,31 +1,3 @@
-/*
-function Home() {
-  const navigate = useNavigate();
-
-  const handleLogout = async () => {
-    try {
-      await fetch("https://localhost:5001/logout", {
-        method: "POST",
-        credentials: "include", // Send the cookie to clear it on the backend
-      });
-      navigate("/login");
-    } catch (error) {
-      console.error("Logout failed", error);
-    }
-  };
-
-  return (
-    <div>
-      <h1>Welcome to the Home Page</h1>
-      <Button variant="contained" onClick={handleLogout}>
-        Logout
-      </Button>
-    </div>
-  );
-}
-
-export default Home;
-*/
 import React, { useEffect, useState } from "react";
 import {
   Box,
@@ -33,14 +5,16 @@ import {
   Container,
   Typography,
   Grid,
-  Modal,
-  TextField,
+  Paper,
+  Card,
+  CardContent,
+  CardActionArea,
 } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import AddCircleIcon from "@mui/icons-material/AddCircle";
 import AddProjectModal from "../components/AddProjectModal";
+import FolderIcon from "@mui/icons-material/Folder";
 import config from "../config";
-// Dummy data for projects (replace with real data from API or state)
 
 function Home() {
   const [projects, setProjects] = useState([]);
@@ -121,45 +95,150 @@ function Home() {
   };
 
   return (
-    <Container maxWidth="md">
-      <Box sx={{ mt: 4 }}>
-        <Typography variant="h4" gutterBottom>
-          My Projects
-        </Typography>
-        <Grid container spacing={3}>
-          {/* List existing projects */}
-          {projects.map((project) => (
-            <Grid item xs={12} sm={6} md={4} key={project.id}>
-              <Button
-                variant="contained"
-                fullWidth
-                sx={{
-                  backgroundColor: "#56ab2f", // Green theme
-                  "&:hover": { backgroundColor: "#8dcf56" },
-                }}
-                onClick={() => navigate(`/project/${project.cropId}`)}
-              >
-                {project.cropId + " - " + project.fieldName}
-              </Button>
-            </Grid>
-          ))}
-
-          {/* Add new project button */}
-          <Grid item xs={12} sm={6} md={4}>
-            <Button
-              variant="contained"
-              fullWidth
+    <Box
+      sx={{
+        display: "flex",
+        alignItems: "flex-start",
+        justifyContent: "center",
+        minHeight: "calc(100vh - 50px)",
+        backgroundColor: "#f5f8ff",
+        paddingTop: 5,
+        paddingBottom: 5,
+      }}
+    >
+      <Container maxWidth="md">
+        <Paper
+          elevation={0}
+          sx={{
+            padding: 4,
+            borderRadius: "16px",
+            backgroundColor: "#fff",
+            boxShadow: "0px 10px 30px rgba(0, 0, 0, 0.08)",
+          }}
+        >
+          <Box sx={{ mb: 4 }}>
+            <Typography
+              variant="h4"
               sx={{
-                backgroundColor: "#a8e063",
-                "&:hover": { backgroundColor: "#8dcf56" },
+                fontWeight: 600,
+                color: "#5B86E5",
+                mb: 1,
               }}
-              onClick={handleOpenModal}
-              startIcon={<AddCircleIcon />}
             >
-              Add Project
-            </Button>
+              My Projects
+            </Typography>
+            <Typography variant="body1" color="text.secondary">
+              Manage your paddy farming projects
+            </Typography>
+          </Box>
+
+          <Grid container spacing={3}>
+            {/* List existing projects */}
+            {projects.map((project) => (
+              <Grid item xs={12} sm={6} md={4} key={project.id}>
+                <Card
+                  sx={{
+                    borderRadius: "12px",
+                    transition: "all 0.3s ease",
+                    boxShadow: "0 4px 12px rgba(0, 0, 0, 0.05)",
+                    "&:hover": {
+                      transform: "translateY(-5px)",
+                      boxShadow: "0 8px 24px rgba(91, 134, 229, 0.2)",
+                    },
+                  }}
+                >
+                  <CardActionArea
+                    onClick={() => navigate(`/project/${project.cropId}`)}
+                    sx={{
+                      height: "100%",
+                      display: "flex",
+                      flexDirection: "column",
+                      alignItems: "flex-start",
+                    }}
+                  >
+                    <CardContent sx={{ width: "100%", padding: 2.5 }}>
+                      <Box
+                        sx={{ display: "flex", alignItems: "center", mb: 1.5 }}
+                      >
+                        <FolderIcon
+                          sx={{ color: "#5B86E5", mr: 1, fontSize: 28 }}
+                        />
+                        <Typography
+                          variant="h6"
+                          component="div"
+                          sx={{ fontWeight: 600 }}
+                        >
+                          {project.fieldName}
+                        </Typography>
+                      </Box>
+                      <Typography
+                        variant="body2"
+                        color="text.secondary"
+                        sx={{
+                          backgroundColor: "rgba(91, 134, 229, 0.1)",
+                          borderRadius: "4px",
+                          padding: "4px 8px",
+                          display: "inline-block",
+                        }}
+                      >
+                        ID: {project.cropId}
+                      </Typography>
+                    </CardContent>
+                  </CardActionArea>
+                </Card>
+              </Grid>
+            ))}
+
+            {/* Add new project button */}
+            <Grid item xs={12} sm={6} md={4}>
+              <Card
+                sx={{
+                  borderRadius: "12px",
+                  height: "100%",
+                  border: "2px dashed rgba(91, 134, 229, 0.3)",
+                  backgroundColor: "rgba(91, 134, 229, 0.02)",
+                  transition: "all 0.3s ease",
+                  "&:hover": {
+                    backgroundColor: "rgba(91, 134, 229, 0.05)",
+                    transform: "translateY(-5px)",
+                  },
+                  boxShadow: "none",
+                  minHeight: "120px",
+                }}
+              >
+                <CardActionArea
+                  onClick={handleOpenModal}
+                  sx={{
+                    height: "100%",
+                    display: "flex",
+                    flexDirection: "column",
+                    justifyContent: "center",
+                    alignItems: "center",
+                    padding: 2,
+                  }}
+                >
+                  <AddCircleIcon
+                    sx={{
+                      fontSize: 40,
+                      color: "#5B86E5",
+                      mb: 1,
+                    }}
+                  />
+                  <Typography
+                    variant="body1"
+                    component="div"
+                    sx={{
+                      fontWeight: 500,
+                      color: "#5B86E5",
+                    }}
+                  >
+                    Add New Project
+                  </Typography>
+                </CardActionArea>
+              </Card>
+            </Grid>
           </Grid>
-        </Grid>
+        </Paper>
 
         {/* Modal for adding new project */}
         <AddProjectModal
@@ -167,9 +246,8 @@ function Home() {
           handleClose={handleCloseModal}
           onSave={handleSaveProject}
         />
-      </Box>
-    </Container>
+      </Container>
+    </Box>
   );
 }
-
 export default Home;

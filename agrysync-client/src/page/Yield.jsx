@@ -7,7 +7,9 @@ import {
   Typography,
   Grid,
   Paper,
+  Box,
 } from "@mui/material";
+import BarChartIcon from "@mui/icons-material/BarChart";
 import config from "../config";
 
 const YieldPrediction = () => {
@@ -69,177 +71,305 @@ const YieldPrediction = () => {
   };
 
   return (
-    <Container maxWidth="sm">
-      <Paper sx={{ padding: 4, marginTop: 4 }} elevation={3}>
-        <Typography
-          variant="h4"
-          component="h1"
-          gutterBottom
-          textAlign="center"
+    <Box
+      sx={{
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center",
+        padding: { xs: 2, md: 4 },
+        minHeight: "calc(100vh - 100px)",
+        backgroundColor: "#f5f8ff",
+      }}
+    >
+      <Container maxWidth="md">
+        <Paper
+          elevation={0}
           sx={{
-            fontWeight: "bold",
-            color: "#00796b",
-            marginBottom: 3,
+            padding: 4,
+            borderRadius: "16px",
+            backgroundColor: "#fff",
+            boxShadow: "0px 10px 30px rgba(0, 0, 0, 0.08)",
+            transition: "transform 0.3s ease-in-out",
+            "&:hover": {
+              transform: "translateY(-5px)",
+            },
           }}
         >
-          Predict Paddy Yield
-        </Typography>
+          <Box sx={{ textAlign: "center", mb: 4 }}>
+            <BarChartIcon sx={{ fontSize: 48, color: "#5B86E5", mb: 1 }} />
+            <Typography
+              variant="h4"
+              component="h1"
+              gutterBottom
+              sx={{
+                fontWeight: 600,
+                color: "#5B86E5",
+              }}
+            >
+              Paddy Yield Prediction
+            </Typography>
+            <Typography variant="body1" color="text.secondary">
+              Enter your field parameters to predict yield
+            </Typography>
+          </Box>
 
-        <form onSubmit={handleSubmit}>
-          <Grid container spacing={2}>
-            {/* First Row */}
-            <Grid item xs={12} sm={6}>
-              <TextField
-                select
-                label="Crop Type"
-                name="CropType"
-                value={formData.CropType}
-                onChange={handleChange}
-                fullWidth
-                sx={{ mb: 3 }} // Material-UI spacing shorthand
+          <form onSubmit={handleSubmit}>
+            <Grid container spacing={3}>
+              {/* First Row */}
+              <Grid item xs={12} sm={6}>
+                <TextField
+                  select
+                  label="Crop Type"
+                  name="CropType"
+                  value={formData.CropType}
+                  onChange={handleChange}
+                  fullWidth
+                  sx={{
+                    "& .MuiOutlinedInput-root": {
+                      borderRadius: "10px",
+                      "&:hover .MuiOutlinedInput-notchedOutline": {
+                        borderColor: "#5B86E5",
+                      },
+                    },
+                  }}
+                >
+                  <MenuItem value="Paddy">Paddy</MenuItem>
+                  <MenuItem value="Wheat">Wheat</MenuItem>
+                </TextField>
+              </Grid>
+
+              <Grid item xs={12} sm={6}>
+                <TextField
+                  label="Variety"
+                  name="Variety"
+                  value={formData.Variety}
+                  onChange={handleChange}
+                  fullWidth
+                  sx={{
+                    "& .MuiOutlinedInput-root": {
+                      borderRadius: "10px",
+                      "&:hover .MuiOutlinedInput-notchedOutline": {
+                        borderColor: "#5B86E5",
+                      },
+                    },
+                  }}
+                />
+              </Grid>
+
+              {/* Second Row */}
+              <Grid item xs={12} sm={6}>
+                <TextField
+                  select
+                  label="Season"
+                  name="Season"
+                  value={formData.Season}
+                  onChange={handleChange}
+                  fullWidth
+                  sx={{
+                    "& .MuiOutlinedInput-root": {
+                      borderRadius: "10px",
+                      "&:hover .MuiOutlinedInput-notchedOutline": {
+                        borderColor: "#5B86E5",
+                      },
+                    },
+                  }}
+                >
+                  <MenuItem value="Yala">Yala</MenuItem>
+                  <MenuItem value="Maha">Maha</MenuItem>
+                </TextField>
+              </Grid>
+
+              <Grid item xs={12} sm={6}>
+                <TextField
+                  select
+                  label="Growth Stage"
+                  name="GrowthStage"
+                  value={formData.GrowthStage}
+                  onChange={handleChange}
+                  fullWidth
+                  sx={{
+                    "& .MuiOutlinedInput-root": {
+                      borderRadius: "10px",
+                      "&:hover .MuiOutlinedInput-notchedOutline": {
+                        borderColor: "#5B86E5",
+                      },
+                    },
+                  }}
+                >
+                  <MenuItem value="Seedling">Seedling</MenuItem>
+                  <MenuItem value="Mature">Mature</MenuItem>
+                </TextField>
+              </Grid>
+
+              {/* Third Row */}
+              <Grid item xs={12} sm={6}>
+                <TextField
+                  select
+                  label="Water Level"
+                  name="WaterLevel"
+                  value={formData.WaterLevel}
+                  onChange={handleChange}
+                  fullWidth
+                  sx={{
+                    "& .MuiOutlinedInput-root": {
+                      borderRadius: "10px",
+                      "&:hover .MuiOutlinedInput-notchedOutline": {
+                        borderColor: "#5B86E5",
+                      },
+                    },
+                  }}
+                >
+                  <MenuItem value="Low">Low</MenuItem>
+                  <MenuItem value="Medium">Medium</MenuItem>
+                  <MenuItem value="High">High</MenuItem>
+                </TextField>
+              </Grid>
+
+              <Grid item xs={12} sm={6}>
+                <TextField
+                  label="Fertilizer Used"
+                  name="FertilizerUsed"
+                  value={formData.FertilizerUsed}
+                  onChange={handleChange}
+                  fullWidth
+                  sx={{
+                    "& .MuiOutlinedInput-root": {
+                      borderRadius: "10px",
+                      "&:hover .MuiOutlinedInput-notchedOutline": {
+                        borderColor: "#5B86E5",
+                      },
+                    },
+                  }}
+                />
+              </Grid>
+
+              {/* Fourth Row */}
+              <Grid item xs={12} sm={4}>
+                <TextField
+                  label="Temperature (°C)"
+                  name="Temperature"
+                  type="number"
+                  value={formData.Temperature}
+                  onChange={handleChange}
+                  fullWidth
+                  sx={{
+                    "& .MuiOutlinedInput-root": {
+                      borderRadius: "10px",
+                      "&:hover .MuiOutlinedInput-notchedOutline": {
+                        borderColor: "#5B86E5",
+                      },
+                    },
+                  }}
+                />
+              </Grid>
+
+              <Grid item xs={12} sm={4}>
+                <TextField
+                  label="Humidity (%)"
+                  name="Humidity"
+                  type="number"
+                  value={formData.Humidity}
+                  onChange={handleChange}
+                  fullWidth
+                  sx={{
+                    "& .MuiOutlinedInput-root": {
+                      borderRadius: "10px",
+                      "&:hover .MuiOutlinedInput-notchedOutline": {
+                        borderColor: "#5B86E5",
+                      },
+                    },
+                  }}
+                />
+              </Grid>
+
+              <Grid item xs={12} sm={4}>
+                <TextField
+                  label="Rainfall (mm)"
+                  name="Rainfall"
+                  type="number"
+                  value={formData.Rainfall}
+                  onChange={handleChange}
+                  fullWidth
+                  sx={{
+                    "& .MuiOutlinedInput-root": {
+                      borderRadius: "10px",
+                      "&:hover .MuiOutlinedInput-notchedOutline": {
+                        borderColor: "#5B86E5",
+                      },
+                    },
+                  }}
+                />
+              </Grid>
+            </Grid>
+
+            {/* Submit Button */}
+            <Button
+              type="submit"
+              variant="contained"
+              sx={{
+                marginTop: 4,
+                padding: "12px",
+                fontWeight: "600",
+                borderRadius: "10px",
+                background: "linear-gradient(90deg, #5B86E5 30%, #36D1DC 100%)",
+                boxShadow: "0 4px 15px rgba(91, 134, 229, 0.3)",
+                transition: "all 0.3s ease",
+                "&:hover": {
+                  boxShadow: "0 6px 20px rgba(91, 134, 229, 0.4)",
+                  transform: "translateY(-2px)",
+                },
+                "&.Mui-disabled": {
+                  background: "#e0e0e0",
+                  color: "#a0a0a0",
+                },
+              }}
+              fullWidth
+              disabled={!isFormComplete()}
+            >
+              Predict Yield
+            </Button>
+          </form>
+
+          {predictedYield && (
+            <Box
+              sx={{
+                marginTop: 4,
+                padding: 3,
+                backgroundColor: "rgba(91, 134, 229, 0.05)",
+                borderRadius: "12px",
+                border: "1px solid rgba(91, 134, 229, 0.2)",
+                textAlign: "center",
+              }}
+            >
+              <Typography
+                variant="h6"
+                component="p"
+                sx={{
+                  fontWeight: "600",
+                  color: "#5B86E5",
+                  marginBottom: 1,
+                }}
               >
-                <MenuItem value="Paddy">Paddy</MenuItem>
-                <MenuItem value="Wheat">Wheat</MenuItem>
-              </TextField>
-            </Grid>
-
-            <Grid item xs={12} sm={6}>
-              <TextField
-                label="Variety"
-                name="Variety"
-                value={formData.Variety}
-                onChange={handleChange}
-                fullWidth
-                sx={{ mb: 3 }} // Material-UI spacing shorthand
-              />
-            </Grid>
-
-            {/* Second Row */}
-            <Grid item xs={12} sm={6}>
-              <TextField
-                select
-                label="Season"
-                name="Season"
-                value={formData.Season}
-                onChange={handleChange}
-                fullWidth
-                sx={{ mb: 3 }} // Material-UI spacing shorthand
+                Prediction Result
+              </Typography>
+              <Typography
+                variant="h4"
+                component="p"
+                sx={{
+                  fontWeight: "700",
+                  color: "#3a3a3a",
+                }}
               >
-                <MenuItem value="Yala">Yala</MenuItem>
-                <MenuItem value="Maha">Maha</MenuItem>
-              </TextField>
-            </Grid>
-
-            <Grid item xs={12} sm={6}>
-              <TextField
-                select
-                label="Growth Stage"
-                name="GrowthStage"
-                value={formData.GrowthStage}
-                onChange={handleChange}
-                fullWidth
-                sx={{ mb: 3 }} // Material-UI spacing shorthand
-              >
-                <MenuItem value="Seedling">Seedling</MenuItem>
-                <MenuItem value="Mature">Mature</MenuItem>
-              </TextField>
-            </Grid>
-
-            {/* Third Row */}
-            <Grid item xs={12} sm={6}>
-              <TextField
-                select
-                label="Water Level"
-                name="WaterLevel"
-                value={formData.WaterLevel}
-                onChange={handleChange}
-                fullWidth
-                sx={{ mb: 3 }} // Material-UI spacing shorthand
-              >
-                <MenuItem value="Low">Low</MenuItem>
-                <MenuItem value="Medium">Medium</MenuItem>
-                <MenuItem value="High">High</MenuItem>
-              </TextField>
-            </Grid>
-
-            <Grid item xs={12} sm={6}>
-              <TextField
-                label="Fertilizer Used"
-                name="FertilizerUsed"
-                value={formData.FertilizerUsed}
-                onChange={handleChange}
-                fullWidth
-                sx={{ mb: 3 }} // Material-UI spacing shorthand
-              />
-            </Grid>
-
-            {/* Fourth Row */}
-            <Grid item xs={12} sm={6}>
-              <TextField
-                label="Temperature (°C)"
-                name="Temperature"
-                type="number"
-                value={formData.Temperature}
-                onChange={handleChange}
-                fullWidth
-                sx={{ mb: 3 }} // Material-UI spacing shorthand
-              />
-            </Grid>
-
-            <Grid item xs={12} sm={6}>
-              <TextField
-                label="Humidity (%)"
-                name="Humidity"
-                type="number"
-                value={formData.Humidity}
-                onChange={handleChange}
-                fullWidth
-                sx={{ mb: 3 }} // Material-UI spacing shorthand
-              />
-            </Grid>
-
-            {/* Fifth Row */}
-            <Grid item xs={12} sm={6}>
-              <TextField
-                label="Rainfall (mm)"
-                name="Rainfall"
-                type="number"
-                value={formData.Rainfall}
-                onChange={handleChange}
-                fullWidth
-                sx={{ mb: 3 }} // Material-UI spacing shorthand
-              />
-            </Grid>
-          </Grid>
-
-          {/* Submit Button */}
-          <Button
-            type="submit"
-            variant="contained"
-            sx={{
-              padding: 1.5,
-              fontWeight: "bold",
-              mt: 3,
-              backgroundColor: "#00796b",
-              "&:hover": {
-                backgroundColor: "#004d40",
-              },
-              color: "#fff",
-            }} // Custom color
-            fullWidth
-            disabled={!isFormComplete()} // Disable if form is not complete
-          >
-            Predict Yield
-          </Button>
-        </form>
-
-        {predictedYield && (
-          <Typography variant="h6" color="primary" sx={{ mt: 3 }}>
-            Predicted Yield: {predictedYield.toFixed(2)} tons/ha
-          </Typography>
-        )}
-      </Paper>
-    </Container>
+                {predictedYield.toFixed(2)}{" "}
+                <span style={{ fontSize: "1rem", fontWeight: "normal" }}>
+                  tons/hectare
+                </span>
+              </Typography>
+            </Box>
+          )}
+        </Paper>
+      </Container>
+    </Box>
   );
 };
 

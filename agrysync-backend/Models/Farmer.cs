@@ -32,9 +32,9 @@ namespace agrysync_backend.Models
         public DateTime DateRegistered { get; set; } = DateTime.Now; // Initialize to current date if needed
 
         //hashed password
-        public string PasswordHash { get; set; }
+        public string? PasswordHash { get; set; }
         // Navigation property for related fields
-        public ICollection<Feedback> Feedback { get; set; }
+        public ICollection<Feedback>? Feedback { get; set; }
         public virtual ICollection<Field> Fields { get; set; } = new List<Field>(); // Initialize the collection
     }
 }

@@ -43,19 +43,22 @@ namespace agrysync_backend.Controllers
             return Ok(new { TotalFarms = totalFarms, RecentFarms = recentFarms });
         }
 
-        // 2️⃣ Latest Weather Data per Field
+        // Updated to return average weather data grouped by date
         [HttpGet("weather")]
         public async Task<IActionResult> GetLatestWeatherData()
         {
-            var weatherData = await _context.Field
-                .Include(f => f.WeatherData)
-                .Select(f => new
+            var weatherData = await _context.WeatherData
+                .GroupBy(w => w.DateRecorded.Date)
+                .Select(g => new
                 {
-                    FieldName = f.FieldName,
-                    Latitude = f.Latitude,
-                    Longitude = f.Longitude,
-                    WeatherData = f.WeatherData.OrderByDescending(w => w.DateRecorded).FirstOrDefault()
+                    DateRecorded = g.Key,
+                    AverageTemperature = g.Average(w => w.Temperature),
+                    AverageHumidity = g.Average(w => w.Humidity),
+                    AverageRainfall = g.Average(w => w.Rainfall),
+                    AverageWindSpeed = g.Average(w => w.WindSpeed)
                 })
+                .OrderByDescending(w => w.DateRecorded)
+                .Take(30) // Get data for the last 30 days
                 .ToListAsync();
 
             return Ok(weatherData);

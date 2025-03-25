@@ -1,7 +1,14 @@
 import React, { useState } from "react";
-import { Box, Button, Typography, CircularProgress } from "@mui/material";
+import {
+  Box,
+  Button,
+  Typography,
+  CircularProgress,
+  Paper,
+} from "@mui/material";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import CloudUploadIcon from "@mui/icons-material/CloudUpload";
 import config from "../config";
 
 function DiseaseIdentifier() {
@@ -54,116 +61,190 @@ function DiseaseIdentifier() {
   return (
     <Box
       sx={{
-        padding: 4,
-        maxWidth: 600,
-        margin: "0 auto",
-        borderRadius: 2,
-        backgroundColor: "#fff",
-        boxShadow: "0px 8px 24px rgba(0, 0, 0, 0.1)",
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center",
+        padding: { xs: 2, md: 4 },
+        minHeight: "calc(100vh - 100px)",
+        backgroundColor: "#f5f8ff",
       }}
     >
-      <Typography
-        variant="h4"
-        component="h1"
-        gutterBottom
-        textAlign="center"
+      <Paper
+        elevation={0}
         sx={{
-          fontWeight: "bold",
-          color: "#00796b",
-          marginBottom: 3,
-        }}
-      >
-        Paddy Disease Identifier
-      </Typography>
-
-      <Box
-        component="label"
-        sx={{
-          display: "block",
-          textAlign: "center",
-          backgroundColor: "#f1f1f1",
-          borderRadius: 2,
-          padding: 2,
-          border: "2px dashed #00796b",
-          cursor: "pointer",
+          padding: 4,
+          width: "100%",
+          maxWidth: 600,
+          borderRadius: "16px",
+          backgroundColor: "#fff",
+          boxShadow: "0px 10px 30px rgba(0, 0, 0, 0.08)",
+          transition: "transform 0.3s ease-in-out",
           "&:hover": {
-            backgroundColor: "#e0f7fa",
-          },
-          marginBottom: 2,
-        }}
-      >
-        <input
-          accept="image/*"
-          type="file"
-          onChange={handleFileChange}
-          style={{ display: "none" }}
-        />
-        <Typography variant="body1" color="textSecondary">
-          {file ? file.name : "Click to select an image"}
-        </Typography>
-      </Box>
-
-      {imagePreview && (
-        <Box
-          component="img"
-          src={imagePreview}
-          alt="Selected Preview"
-          sx={{
-            width: "100%",
-            maxHeight: 300,
-            objectFit: "cover",
-            borderRadius: 2,
-            border: "1px solid #00796b",
-            marginBottom: 2,
-          }}
-        />
-      )}
-
-      <Button
-        variant="contained"
-        color="primary"
-        onClick={handleUpload}
-        disabled={!file || loading}
-        fullWidth
-        sx={{
-          padding: 1.5,
-          fontWeight: "bold",
-          backgroundColor: "#00796b",
-          "&:hover": {
-            backgroundColor: "#004d40",
+            transform: "translateY(-5px)",
           },
         }}
       >
-        {loading ? (
-          <>
-            <CircularProgress
-              size={24}
-              color="inherit"
-              sx={{ marginRight: 1 }}
-            />
-            Identifying...
-          </>
-        ) : (
-          "Identify Disease"
-        )}
-      </Button>
-
-      {prediction && (
         <Typography
-          variant="h6"
-          component="p"
+          variant="h4"
+          component="h1"
+          gutterBottom
+          textAlign="center"
           sx={{
-            marginTop: 3,
-            textAlign: "center",
-            fontWeight: "bold",
-            color: "#00796b",
+            fontWeight: 600,
+            color: "#5B86E5",
+            marginBottom: 4,
           }}
         >
-          Prediction: {prediction}
+          Paddy Disease Identifier
         </Typography>
-      )}
 
-      <ToastContainer />
+        <Box
+          component="label"
+          sx={{
+            display: "block",
+            textAlign: "center",
+            backgroundColor: "rgba(91, 134, 229, 0.05)",
+            borderRadius: "12px",
+            padding: 3,
+            border: "2px dashed #5B86E5",
+            cursor: "pointer",
+            transition: "all 0.2s ease",
+            "&:hover": {
+              backgroundColor: "rgba(91, 134, 229, 0.1)",
+              borderColor: "#36D1DC",
+            },
+            marginBottom: 3,
+          }}
+        >
+          <input
+            accept="image/*"
+            type="file"
+            onChange={handleFileChange}
+            style={{ display: "none" }}
+          />
+          <CloudUploadIcon
+            sx={{ fontSize: 48, color: "#5B86E5", marginBottom: 2 }}
+          />
+          <Typography variant="body1" color="#5B86E5" fontWeight={500}>
+            {file ? file.name : "Click to upload a paddy leaf image"}
+          </Typography>
+          <Typography
+            variant="caption"
+            color="text.secondary"
+            sx={{ mt: 1, display: "block" }}
+          >
+            Supported formats: JPG, PNG, JPEG
+          </Typography>
+        </Box>
+
+        {imagePreview && (
+          <Box
+            sx={{
+              display: "flex",
+              justifyContent: "center",
+              marginBottom: 3,
+            }}
+          >
+            <Box
+              component="img"
+              src={imagePreview}
+              alt="Selected Preview"
+              sx={{
+                width: "100%",
+                maxHeight: 300,
+                objectFit: "contain",
+                borderRadius: "12px",
+                border: "1px solid rgba(91, 134, 229, 0.2)",
+                boxShadow: "0 4px 12px rgba(0, 0, 0, 0.05)",
+              }}
+            />
+          </Box>
+        )}
+
+        <Button
+          variant="contained"
+          color="primary"
+          onClick={handleUpload}
+          disabled={!file || loading}
+          fullWidth
+          sx={{
+            padding: 1.5,
+            fontWeight: "600",
+            borderRadius: "10px",
+            background: "linear-gradient(90deg, #5B86E5 30%, #36D1DC 100%)",
+            boxShadow: "0 4px 15px rgba(91, 134, 229, 0.3)",
+            transition: "all 0.3s ease",
+            "&:hover": {
+              boxShadow: "0 6px 20px rgba(91, 134, 229, 0.4)",
+              transform: "translateY(-2px)",
+            },
+            "&.Mui-disabled": {
+              background: "#e0e0e0",
+              color: "#a0a0a0",
+            },
+          }}
+        >
+          {loading ? (
+            <>
+              <CircularProgress
+                size={24}
+                color="inherit"
+                sx={{ marginRight: 1 }}
+              />
+              Identifying...
+            </>
+          ) : (
+            "Identify Disease"
+          )}
+        </Button>
+
+        {prediction && (
+          <Box
+            sx={{
+              marginTop: 4,
+              padding: 3,
+              backgroundColor: "rgba(91, 134, 229, 0.05)",
+              borderRadius: "12px",
+              border: "1px solid rgba(91, 134, 229, 0.2)",
+              textAlign: "center",
+            }}
+          >
+            <Typography
+              variant="h6"
+              component="p"
+              sx={{
+                fontWeight: "600",
+                color: "#5B86E5",
+                marginBottom: 1,
+              }}
+            >
+              Result
+            </Typography>
+            <Typography
+              variant="body1"
+              component="p"
+              sx={{
+                fontWeight: "500",
+              }}
+            >
+              {prediction}
+            </Typography>
+          </Box>
+        )}
+
+        <ToastContainer
+          position="bottom-center"
+          autoClose={5000}
+          hideProgressBar={false}
+          newestOnTop
+          closeOnClick
+          rtl={false}
+          pauseOnFocusLoss
+          draggable
+          pauseOnHover
+          theme="light"
+        />
+      </Paper>
     </Box>
   );
 }

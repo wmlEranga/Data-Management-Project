@@ -19,73 +19,111 @@ namespace agrysync_backend.Controllers
             _context = context;
         }
 
-        // 1️⃣ Get total number of farmers
-        [HttpGet("total-farmers")]
-        public async Task<IActionResult> GetTotalFarmers()
+        // 6️⃣ Get crop distribution by field area
+        [HttpGet("crop-distribution")]
+        public async Task<IActionResult> GetCropDistribution()
         {
-            var totalFarmers = await _context.Farmers.CountAsync();
-            return Ok(totalFarmers);
-        }
-
-        // 2️⃣ Get total number of fields
-        [HttpGet("total-fields")]
-        public async Task<IActionResult> GetTotalFields()
-        {
-            var totalFields = await _context.Field.CountAsync();
-            return Ok(totalFields);
-        }
-
-        // 3️⃣ Get average yield per crop
-        [HttpGet("average-yield")]
-        public async Task<IActionResult> GetAverageYield()
-        {
-            var yieldData = await _context.YieldData
-                .GroupBy(y => y.CropId)
+            var cropDistribution = await _context.Crop
+                .GroupBy(c => c.CropType)
                 .Select(group => new
                 {
-                    CropId = group.Key,
+                    CropType = group.Key,
+                    TotalArea = group.Sum(c => c.Field.FieldSize),
+                    FieldCount = group.Count()
+                })
+                .OrderByDescending(c => c.TotalArea)
+                .Take(8)
+                .ToListAsync();
+
+            return Ok(cropDistribution);
+        }
+
+        // 7️⃣ Get seasonal yield analysis
+        [HttpGet("seasonal-yield")]
+        public async Task<IActionResult> GetSeasonalYield()
+        {
+            var seasonalYield = await _context.YieldData
+                .Where(y => y.Crop != null)
+                .GroupBy(y => new
+                {
+                    Season = y.Crop.Season,  // Use actual Season from Crop table
+                    CropType = y.Crop.CropType
+                })
+                .Select(group => new
+                {
+                    Season = group.Key.Season,
+                    CropType = group.Key.CropType,
                     AverageYield = group.Average(y => y.YieldAmount)
                 })
+                .OrderBy(s => s.Season)
                 .ToListAsync();
 
-            return Ok(yieldData);
+            return Ok(seasonalYield);
         }
 
-        // 4️⃣ Get common diseases affecting crops
-        [HttpGet("common-diseases")]
-        public async Task<IActionResult> GetCommonDiseases()
+        // Get count of yield by season (Yala and Maha)
+        [HttpGet("season-yield-count")]
+        public async Task<IActionResult> GetSeasonYieldCount()
         {
-            var diseaseStats = await _context.CultivationData
-                .Where(cd => cd.DiseaseId != null)
-                .GroupBy(cd => cd.DiseaseId)
+            var seasonYieldCount = await _context.YieldData
+                .Where(y => y.Crop != null)
+                .GroupBy(y => y.Crop.Season)
                 .Select(group => new
                 {
-                    DiseaseId = group.Key,
-                    Occurrences = group.Count()
+                    Season = group.Key,
+                    YieldCount = group.Count(),
+                    TotalYield = group.Sum(y => y.YieldAmount)
                 })
-                .OrderByDescending(d => d.Occurrences)
-                .Take(5)
+                .OrderByDescending(s => s.YieldCount)
                 .ToListAsync();
 
-            return Ok(diseaseStats);
+            return Ok(seasonYieldCount);
         }
 
-        // 5️⃣ Get fertilizer usage statistics
-        public async Task<IActionResult> GetFertilizerUsage()
+        // Get crop success rate - compares actual yields against expected yields
+        [HttpGet("crop-success-rate")]
+        public async Task<IActionResult> GetCropSuccessRate()
         {
-            var fertilizerUsage = await _context.CultivationData
-                .Where(cd => cd.PesticideId != null)
-                .GroupBy(cd => cd.PesticideId)
+            // Calculate success rate as (actual yield / expected yield) * 100
+            var successRates = await _context.Crop
+                .Where(c => c.YieldData.Any())
+                .GroupBy(c => c.CropType)
                 .Select(group => new
                 {
-                    PesticideId = group.Key,
-                    UsageCount = group.Count()
+                    CropType = group.Key,
+                    SuccessRate = group.Average(c =>
+                        c.YieldData.Sum(y => y.YieldAmount) /
+                        (c.Field.FieldSize * 100) * 100), // Assuming 100 units per area is ideal
+                    CropCount = group.Count()
                 })
-                .OrderByDescending(f => f.UsageCount)
-                .Take(5)
+                .OrderByDescending(s => s.SuccessRate)
                 .ToListAsync();
 
-            return Ok(fertilizerUsage);
+            return Ok(successRates);
+        }
+
+        // Get farmer productivity comparison
+        [HttpGet("farmer-productivity")]
+        public async Task<IActionResult> GetFarmerProductivity()
+        {
+            var farmerProductivity = await _context.Farmers
+                .Where(f => f.Fields.Any(field => field.Crops.Any(c => c.YieldData.Any())))
+                .Select(farmer => new
+                {
+                    FarmerName = farmer.FarmerName,
+                    TotalFields = farmer.Fields.Count(),
+                    TotalCrops = farmer.Fields.Sum(f => f.Crops.Count()),
+                    AverageYield = farmer.Fields
+                        .SelectMany(f => f.Crops)
+                        .SelectMany(c => c.YieldData)
+                        .Average(y => y.YieldAmount),
+                    TotalArea = farmer.Fields.Sum(f => f.FieldSize)
+                })
+                .OrderByDescending(f => f.AverageYield / f.TotalArea)
+                .Take(10)
+                .ToListAsync();
+
+            return Ok(farmerProductivity);
         }
     }
 }
