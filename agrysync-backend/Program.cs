@@ -30,7 +30,7 @@ builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowSpecificOrigins", builder =>
     {
-        builder.WithOrigins("http://localhost:3000") // Allow your frontend URL
+        builder.WithOrigins("http://localhost:3000", "http://localhost:3001") // Allow your frontend URLs
                .AllowAnyMethod()
                .AllowAnyHeader()
                .WithExposedHeaders("Set-Cookie")

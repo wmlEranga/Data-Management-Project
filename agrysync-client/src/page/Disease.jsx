@@ -48,7 +48,34 @@ function DiseaseIdentifier() {
       }
 
       const data = await response.json();
-      setPrediction(data.prediction);
+
+      // Parse the prediction string to extract disease and confidence
+      try {
+        const predictionStr = data.prediction;
+        console.log("Raw prediction:", predictionStr); // Debug log
+
+        // Extract values using regex for more reliability
+        const diseaseMatch = /disease:\s*([^,}]+)/.exec(predictionStr);
+        const confidenceMatch = /confidence:\s*([0-9.]+)/.exec(predictionStr);
+
+        if (diseaseMatch && confidenceMatch) {
+          const disease = diseaseMatch[1].trim();
+          const confidence = parseFloat(confidenceMatch[1]);
+
+          setPrediction({
+            disease: disease,
+            confidence: confidence,
+          });
+          console.log("Parsed prediction:", { disease, confidence }); // Debug log
+        } else {
+          throw new Error("Could not extract disease or confidence values");
+        }
+      } catch (parseError) {
+        console.error("Error parsing prediction:", parseError);
+        console.error("Raw prediction data:", data.prediction);
+        setPrediction({ disease: "Unknown", confidence: 0 });
+      }
+
       toast.success("Prediction received successfully!");
     } catch (error) {
       console.error("Error uploading the file", error);
@@ -218,17 +245,72 @@ function DiseaseIdentifier() {
                 marginBottom: 1,
               }}
             >
-              Result
+              Disease Detection Result
             </Typography>
-            <Typography
-              variant="body1"
-              component="p"
-              sx={{
-                fontWeight: "500",
-              }}
-            >
-              {prediction}
-            </Typography>
+
+            <Box sx={{ mt: 2 }}>
+              <Typography
+                variant="subtitle1"
+                component="p"
+                sx={{ fontWeight: "500", mb: 1 }}
+              >
+                Disease Detected:
+              </Typography>
+              <Typography
+                variant="h5"
+                component="p"
+                sx={{
+                  fontWeight: "600",
+                  color: "#d32f2f",
+                  mb: 3,
+                  textTransform: "capitalize",
+                }}
+              >
+                {typeof prediction === "string"
+                  ? prediction
+                  : prediction.disease
+                  ? prediction.disease.replace(/_/g, " ")
+                  : "Unknown disease"}
+              </Typography>
+
+              {typeof prediction !== "string" && prediction.confidence && (
+                <>
+                  <Typography
+                    variant="subtitle1"
+                    component="p"
+                    sx={{ fontWeight: "500", mb: 1 }}
+                  >
+                    Confidence Level:
+                  </Typography>
+                  <Box
+                    sx={{
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      position: "relative",
+                    }}
+                  >
+                    <CircularProgress
+                      variant="determinate"
+                      value={Math.min(prediction.confidence, 100)}
+                      size={60}
+                      thickness={5}
+                      sx={{ color: "#5B86E5" }}
+                    />
+                    <Typography
+                      variant="h6"
+                      component="p"
+                      sx={{
+                        position: "absolute",
+                        fontWeight: "600",
+                      }}
+                    >
+                      {Math.round(prediction.confidence)}%
+                    </Typography>
+                  </Box>
+                </>
+              )}
+            </Box>
           </Box>
         )}
 

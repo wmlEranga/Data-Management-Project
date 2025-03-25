@@ -49,7 +49,7 @@ namespace agrysync_backend.Controllers
                 var form = new MultipartFormDataContent();
                 form.Add(new ByteArrayContent(System.IO.File.ReadAllBytes(filePath)), "file", file.FileName);
 
-                var response = await client.PostAsync("http://127.0.0.1:5000/predict", form);
+                var response = await client.PostAsync("http://localhost:5000/disease/predict", form);
                 if (response.IsSuccessStatusCode)
                 {
                     var prediction = await response.Content.ReadAsStringAsync();
