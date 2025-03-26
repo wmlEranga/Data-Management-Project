@@ -24,8 +24,10 @@ import {
   Agriculture,
   Opacity,
   ArrowForward,
+  Assessment,
 } from "@mui/icons-material";
 import AddCultivationModal from "../components/AddCultivationModal";
+import AddYieldModal from "../components/AddYieldModal";
 import config from "../config";
 
 function ProjectPage() {
@@ -33,6 +35,7 @@ function ProjectPage() {
   const navigate = useNavigate();
   const [project, setProject] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isYieldModalOpen, setIsYieldModalOpen] = useState(false);
   const [guidance, setGuidance] = useState([]);
 
   useEffect(() => {
@@ -61,6 +64,8 @@ function ProjectPage() {
 
   const handleOpenModal = () => setIsModalOpen(true);
   const handleCloseModal = () => setIsModalOpen(false);
+  const handleOpenYieldModal = () => setIsYieldModalOpen(true);
+  const handleCloseYieldModal = () => setIsYieldModalOpen(false);
 
   if (!project) {
     return (
@@ -114,7 +119,7 @@ function ProjectPage() {
                   color: "#5B86E5",
                 }}
               >
-                {project.cropType} Project
+                {project.fieldName}
               </Typography>
               <Typography
                 variant="subtitle1"
@@ -141,6 +146,23 @@ function ProjectPage() {
                 }}
               >
                 Cultivation Data
+              </Button>
+              <Button
+                variant="outlined"
+                startIcon={<Assessment />}
+                onClick={handleOpenYieldModal}
+                sx={{
+                  borderRadius: "10px",
+                  padding: "8px 16px",
+                  color: "#5B86E5",
+                  borderColor: "#5B86E5",
+                  "&:hover": {
+                    borderColor: "#36D1DC",
+                    backgroundColor: "rgba(91, 134, 229, 0.04)",
+                  },
+                }}
+              >
+                Add Yield
               </Button>
               <Button
                 variant="contained"
@@ -483,6 +505,11 @@ function ProjectPage() {
         <AddCultivationModal
           open={isModalOpen}
           onClose={handleCloseModal}
+          projectId={id}
+        />
+        <AddYieldModal
+          open={isYieldModalOpen}
+          onClose={handleCloseYieldModal}
           projectId={id}
         />
       </Container>
