@@ -6,9 +6,9 @@ from sklearn.preprocessing import StandardScaler
 app = Flask(__name__)
 
 # Load the model, scaler, and label encoders
-MODEL_PATH = "Model 1/models/versioned/current_model.pkl"
-SCALER_PATH = "Model 1/models/versioned/current_scaler.pkl"
-ENCODERS_PATH = "Model 1/models/versioned/current_label_encoders.pkl"
+MODEL_PATH = "models/versioned/current_model.pkl"
+SCALER_PATH = "models/versioned/current_scaler.pkl"
+ENCODERS_PATH = "models/versioned/current_label_encoders.pkl"
 
 model = joblib.load(MODEL_PATH)
 scaler = joblib.load(SCALER_PATH)
@@ -49,7 +49,7 @@ def predict():
     prepared_input = prepare_input(input_data, scaler, label_encoders)
     predictions = make_prediction(model, prepared_input)
     predicted_yield = predictions[0]
-    return jsonify({"predicted_yield": f"{predicted_yield:.2f} tons/ha"})
+    return jsonify({"predicted_yield": f"{predicted_yield:.2f} kg/ha"})
 
 
 if __name__ == "__main__":

@@ -86,7 +86,7 @@ const Header = () => {
               mr: 2,
             }}
           >
-            Paddy Farming App
+            AgrySync
           </Typography>
         </Box>
 

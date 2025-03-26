@@ -93,7 +93,7 @@ namespace agrysync_backend.Controllers
                     CropType = group.Key,
                     SuccessRate = group.Average(c =>
                         c.YieldData.Sum(y => y.YieldAmount) /
-                        (c.Field.FieldSize * 100) * 100), // Assuming 100 units per area is ideal
+                        (c.Field.FieldSize * 4531) * 100), // Using 4531 units per hectare as ideal
                     CropCount = group.Count()
                 })
                 .OrderByDescending(s => s.SuccessRate)

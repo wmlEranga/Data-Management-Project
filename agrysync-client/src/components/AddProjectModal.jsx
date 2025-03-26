@@ -154,7 +154,7 @@ const AddProjectModal = ({ open, handleClose, onSave }) => {
             </Grid>
             <Grid item xs={4}>
               <TextField
-                label="Field Size (acres/hectares)"
+                label="Field Size (hectares)"
                 type="number"
                 required
                 value={fieldSize}
